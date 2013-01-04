@@ -10,7 +10,7 @@ uint16_t *boom_counter_pdo;
 uint8_t *boom_medulla_id_pdo;
 medulla_state_t *boom_current_state_pdo;
 uint8_t *boom_medulla_counter_pdo;
-uint8_t *boom_error_flags_pdo;
+uint16_t *boom_error_flags_pdo;
 
 uint32_t *x_encoder_pdo;
 uint16_t *x_encoder_timestamp_pdo;
@@ -29,7 +29,7 @@ ecat_pdo_entry_t boom_rx_pdos[] = {{((void**)(&boom_command_state_pdo)),1},
 ecat_pdo_entry_t boom_tx_pdos[] = {{((void**)(&boom_medulla_id_pdo)),1},
                               {((void**)(&boom_current_state_pdo)),1},
                               {((void**)(&boom_medulla_counter_pdo)),1},
-                              {((void**)(&boom_error_flags_pdo)),1},
+                              {((void**)(&boom_error_flags_pdo)),2},
                               {((void**)(&x_encoder_pdo)),4},
                               {((void**)(&x_encoder_timestamp_pdo)),2},
                               {((void**)(&pitch_encoder_pdo)),4},

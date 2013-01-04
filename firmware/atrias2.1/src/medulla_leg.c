@@ -11,7 +11,7 @@ int32_t *leg_motor_current_pdo;
 uint8_t *leg_medulla_id_pdo;
 medulla_state_t *leg_current_state_pdo;
 uint8_t *leg_medulla_counter_pdo;
-uint8_t *leg_error_flags_pdo;
+uint16_t *leg_error_flags_pdo;
 uint8_t *leg_limit_switch_pdo;
 uint16_t *toe_sensor_pdo;
 
@@ -42,7 +42,7 @@ ecat_pdo_entry_t leg_rx_pdos[] = {{((void**)(&leg_command_state_pdo)),1},
 ecat_pdo_entry_t leg_tx_pdos[] = {{((void**)(&leg_medulla_id_pdo)),1},
                               {((void**)(&leg_current_state_pdo)),1},
                               {((void**)(&leg_medulla_counter_pdo)),1},
-                              {((void**)(&leg_error_flags_pdo)),1},
+                              {((void**)(&leg_error_flags_pdo)),2},
                               {((void**)(&leg_limit_switch_pdo)),1},
                               {((void**)(&toe_sensor_pdo)),2},
                               {((void**)(&motor_encoder_pdo)),4},

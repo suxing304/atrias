@@ -10,7 +10,7 @@ int32_t *hip_motor_current_pdo;
 uint8_t *hip_medulla_id_pdo;
 medulla_state_t *hip_current_state_pdo;
 uint8_t *hip_medulla_counter_pdo;
-uint8_t *hip_error_flags_pdo;
+uint16_t *hip_error_flags_pdo;
 uint8_t *hip_limit_switch_pdo;
 
 uint32_t *hip_encoder_pdo;
@@ -36,7 +36,7 @@ ecat_pdo_entry_t hip_rx_pdos[] = {{((void**)(&hip_command_state_pdo)),1},
 ecat_pdo_entry_t hip_tx_pdos[] = {{((void**)(&hip_medulla_id_pdo)),1},
                               {((void**)(&hip_current_state_pdo)),1},
                               {((void**)(&hip_medulla_counter_pdo)),1},
-                              {((void**)(&hip_error_flags_pdo)),1},
+                              {((void**)(&hip_error_flags_pdo)),2},
                               {((void**)(&hip_limit_switch_pdo)),1},
                               {((void**)(&hip_encoder_pdo)),4},
                               {((void**)(&hip_encoder_timestamp_pdo)),2},

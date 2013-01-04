@@ -200,9 +200,9 @@
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>5</SubIndex>
-						<BitLen>8</BitLen>
+						<BitLen>16</BitLen>
 						<Name>Error Flags</Name>
-						<DataType>USINT</DataType>
+						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
@@ -449,9 +449,9 @@
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>5</SubIndex>
-						<BitLen>8</BitLen>
+						<BitLen>16</BitLen>
 						<Name>Error Flags</Name>
-						<DataType>USINT</DataType>
+						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
@@ -736,9 +736,9 @@
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>5</SubIndex>
-						<BitLen>8</BitLen>
+						<BitLen>16</BitLen>
 						<Name>Error Flags</Name>
-						<DataType>USINT</DataType>
+						<DataType>UINT</DataType>
 					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">

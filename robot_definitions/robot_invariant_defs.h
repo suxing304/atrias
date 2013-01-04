@@ -22,11 +22,11 @@ typedef enum {
 #define MEDULLA_ASSIGN_ACTIVATE_WORD                                      0x0300
 
 // Total size of process data in each direction for each Medulla type
-#define MEDULLA_LEG_INPUTS_SIZE                                               47
+#define MEDULLA_LEG_INPUTS_SIZE                                               48
 #define MEDULLA_LEG_OUTPUTS_SIZE                                               7
-#define MEDULLA_HIP_INPUTS_SIZE                                               27
+#define MEDULLA_HIP_INPUTS_SIZE                                               28
 #define MEDULLA_HIP_OUTPUTS_SIZE                                               7
-#define MEDULLA_BOOM_INPUTS_SIZE                                              24
+#define MEDULLA_BOOM_INPUTS_SIZE                                              25
 #define MEDULLA_BOOM_OUTPUTS_SIZE                                              3
 
 // Number of PDO entries in each direction for each Medulla type
