@@ -13,7 +13,7 @@ HipMedulla::HipMedulla() : Medulla() {
 	pdoEntryDatas[3]  = {1, (void**) &id};
 	pdoEntryDatas[4]  = {1, (void**) &state};
 	pdoEntryDatas[5]  = {1, (void**) &timingCounter};
-	pdoEntryDatas[6]  = {1, (void**) &errorFlags};
+	pdoEntryDatas[6]  = {2, (void**) &errorFlags};
 	pdoEntryDatas[7]  = {1, (void**) &limitSwitches};
 	pdoEntryDatas[8]  = {4, (void**) &hipEncoder};
 	pdoEntryDatas[9]  = {2, (void**) &hipEncoderTimestamp};

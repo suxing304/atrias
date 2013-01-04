@@ -10,7 +10,7 @@ BoomMedulla::BoomMedulla() : Medulla() {
 	pdoEntryDatas[2]  = {1, (void**) &id};
 	pdoEntryDatas[3]  = {1, (void**) &state};
 	pdoEntryDatas[4]  = {1, (void**) &timingCounter};
-	pdoEntryDatas[5]  = {1, (void**) &errorFlags};
+	pdoEntryDatas[5]  = {2, (void**) &errorFlags};
 	pdoEntryDatas[6]  = {4, (void**) &xEncoder};
 	pdoEntryDatas[7]  = {2, (void**) &xTimestamp};
 	pdoEntryDatas[8]  = {4, (void**) &pitchEncoder};

@@ -11,7 +11,7 @@ LegMedulla::LegMedulla() : Medulla() {
 	pdoEntryDatas[3]  = {1, (void**) &id};
 	pdoEntryDatas[4]  = {1, (void**) &state};
 	pdoEntryDatas[5]  = {1, (void**) &timingCounter};
-	pdoEntryDatas[6]  = {1, (void**) &errorFlags};
+	pdoEntryDatas[6]  = {2, (void**) &errorFlags};
 	pdoEntryDatas[7]  = {1, (void**) &limitSwitch};
 	pdoEntryDatas[8]  = {2, (void**) &toeSensor};
 	pdoEntryDatas[9]  = {4, (void**) &motorEncoder};
