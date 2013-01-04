@@ -174,7 +174,7 @@ int main(void) {
 	#ifdef DEBUG_HIGH
 	printf("[Medulla] Calling init for specific medulla\n");
 	#endif
-	initilize(medulla_id, &ecat_port, ecat_tx_sm_buffer, ecat_rx_sm_buffer, &commanded_state, &current_state, &packet_counter, &TIMESTAMP_COUNTER, &master_watchdog_counter);
+	initilize(medulla_id, &ecat_port, ecat_tx_sm_buffer, ecat_rx_sm_buffer, &commanded_state, &current_state, &packet_counter, &TIMESTAMP_COUNTER, &master_watchdog_counter, &error_flags);
 	
 	#ifdef DEBUG_HIGH
 	printf("[Medulla] Switching printf to low level interrupt\n");
@@ -298,6 +298,7 @@ int main(void) {
 					printf("[Medulla] Master watchdog error.\n");
 					#endif
 					*current_state = medulla_state_error;
+					*error_flags = medulla_error_master_watchdog;
 				}
 
 				// Now we check for errors based upon hardware

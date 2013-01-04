@@ -69,7 +69,7 @@ uint16_t hip_logic_voltage_counter;
 bool hip_send_current_read;
 TC0_t *hip_timestamp_timer;
 
-void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter,TC0_t *timestamp_timer, uint16_t **master_watchdog) {
+void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter,TC0_t *timestamp_timer, uint16_t **master_watchdog, uint16_t **error_flags) {
 
 	hip_thermistor_counter = 0;
 	hip_motor_voltage_counter = 0;
@@ -146,6 +146,7 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	*hip_medulla_id_pdo = id;
 	*commanded_state = hip_command_state_pdo;
 	*current_state = hip_current_state_pdo;
+	*error_flags = hip_error_flags_pdo;
 }
 
 inline void hip_enable_outputs(void) {

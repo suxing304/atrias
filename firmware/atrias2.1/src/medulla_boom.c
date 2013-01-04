@@ -47,7 +47,7 @@ hengstler_ssi_encoder_t x_encoder, pitch_encoder, z_encoder;
 uint16_t logic_voltage_counter;
 uint8_t boom_damping_cnt;
 
-void boom_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog) {
+void boom_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog, uint16_t **error_flags) {
 
 	logic_voltage_counter = 0;
 	boom_damping_cnt = 0;
@@ -96,6 +96,7 @@ void boom_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	*boom_medulla_id_pdo = id;
 	*commanded_state = boom_command_state_pdo;
 	*current_state = boom_current_state_pdo;
+	*error_flags = boom_error_flags_pdo;
 }
 
 inline void boom_enable_outputs(void) {

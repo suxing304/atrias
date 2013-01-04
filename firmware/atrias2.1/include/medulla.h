@@ -86,6 +86,8 @@ uint8_t ecat_rx_sm_buffer[MAX_RX_SM_SIZE]; ///< Buffer used for the rx sync mana
 medulla_state_t *commanded_state;
 medulla_state_t *current_state;
 uint8_t *packet_counter;
+uint16_t *error_flags;
+
 
 // Definitions for the medulla ID dip switches
 #define MEDULLA_ID_PORT PORTJ
@@ -124,7 +126,7 @@ void amplifier_debug();
  *  @param id The 6 bit id of the medulla
  *  @param timestamp_timer Timer to use for generating timestamps
  */
-void (*initilize)(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer,  medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdg); 
+void (*initilize)(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer,  medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdg, uint16_t **error_flags); 
 
 void (*enable_outputs)(void);
 void (*disable_outputs)();

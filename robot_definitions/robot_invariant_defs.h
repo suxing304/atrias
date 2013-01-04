@@ -62,14 +62,15 @@ typedef enum {
 
 // Medulla errors
 typedef enum {
-	medulla_error_estop         = 1<<0,
-	medulla_error_limit_switch  = 1<<1,
-	medulla_error_thermistor    = 1<<2,
-	medulla_error_motor_voltage = 1<<3,
-	medulla_error_logic_voltage = 1<<4,
-	medulla_error_encoder       = 1<<5,
-	medulla_error_halt          = 1<<6,
-	medulla_error_amplifier     = 1<<7
+	medulla_error_estop           = 1<<0,
+	medulla_error_limit_switch    = 1<<1,
+	medulla_error_thermistor      = 1<<2,
+	medulla_error_motor_voltage   = 1<<3,
+	medulla_error_logic_voltage   = 1<<4,
+	medulla_error_encoder         = 1<<5,
+	medulla_error_halt            = 1<<6,
+	medulla_error_amplifier       = 1<<7,
+	medulla_error_master_watchdog = 1<<8
 } medulla_error_t;
 
 // Safety cut off values
