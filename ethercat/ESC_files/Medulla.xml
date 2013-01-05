@@ -198,22 +198,22 @@
 						<DataType>USINT</DataType>
 					</Entry>
 					<Entry>
-						<Index>#x0005</Index>
-						<SubIndex>5</SubIndex>
+						<Index>#x0006</Index>
+						<SubIndex>2</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Error Flags</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>6</SubIndex>
+						<SubIndex>5</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>Limit Switch</Name>
 						<DataType>USINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>2</SubIndex>
+						<SubIndex>3</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Toe Sensor</Name>
 						<DataType>UINT</DataType>
@@ -231,7 +231,7 @@
 					</Entry>					
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>3</SubIndex>
+						<SubIndex>4</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Motor Encoder Timestamp</Name>
 						<DataType>UINT</DataType>
@@ -249,7 +249,7 @@
 					</Entry>					
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>4</SubIndex>
+						<SubIndex>5</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Leg Encoder Timestamp</Name>
 						<DataType>UINT</DataType>
@@ -260,14 +260,14 @@
 					<Name>Incremental Encoder</Name>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>5</SubIndex>
+						<SubIndex>6</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Incremental Encoder</Name>
 						<DataType>UINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>6</SubIndex>
+						<SubIndex>7</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Incremental Encoder Timestamp</Name>
 						<DataType>UINT</DataType>
@@ -278,14 +278,14 @@
 					<Name>Power</Name>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>7</SubIndex>
+						<SubIndex>8</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Motor Voltage</Name>
 						<DataType>UINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>8</SubIndex>
+						<SubIndex>9</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Logic Voltage</Name>
 						<DataType>UINT</DataType>
@@ -296,42 +296,42 @@
 					<Name>Thermistors</Name>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>9</SubIndex>
+						<SubIndex>10</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 0</Name>
 						<DataType>UINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>10</SubIndex>
+						<SubIndex>11</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 1</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>11</SubIndex>
+						<SubIndex>12</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 2</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>12</SubIndex>
+						<SubIndex>13</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 3</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>13</SubIndex>
+						<SubIndex>14</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 4</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>17</SubIndex>
+						<SubIndex>15</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 5</Name>
 						<DataType>UINT</DataType>
@@ -360,14 +360,14 @@
 					<Name>Knee Force</Name>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>18</SubIndex>
+						<SubIndex>16</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Knee Force 1</Name>
 						<DataType>UINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>19</SubIndex>
+						<SubIndex>17</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Knee Force 2</Name>
 						<DataType>UINT</DataType>
@@ -449,9 +449,9 @@
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>5</SubIndex>
-						<BitLen>16</BitLen>
+						<BitLen>8</BitLen>
 						<Name>Error Flags</Name>
-						<DataType>UINT</DataType>
+						<DataType>USINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
@@ -736,9 +736,9 @@
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>5</SubIndex>
-						<BitLen>16</BitLen>
+						<BitLen>8</BitLen>
 						<Name>Error Flags</Name>
-						<DataType>UINT</DataType>
+						<DataType>USINT</DataType>
 					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
