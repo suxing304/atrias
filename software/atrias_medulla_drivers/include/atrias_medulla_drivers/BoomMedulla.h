@@ -29,7 +29,7 @@ class BoomMedulla : public Medulla {
 	uint8_t*  id;
 	uint8_t*  state;
 	uint8_t*  timingCounter;
-	uint8_t*  errorFlags;
+	uint16_t* errorFlags;
 	
 	uint32_t* xEncoder;
 	uint16_t* xTimestamp;
