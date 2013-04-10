@@ -14,7 +14,6 @@
     <depend package="atrias_ecat_conn"/>
     <depend package="atrias_gui"/>
     <depend package="atrias_msgs"/>
-    <depend package="atrias_noop_conn"/>
     <depend package="atrias_rt_ops"/>
     <depend package="atrias_shared"/>
     <depend package="atrias_sim"/>
