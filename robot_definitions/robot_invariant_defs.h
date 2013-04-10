@@ -205,4 +205,7 @@ typedef enum {
   */
 #define STARTUP_TIME                                                         4.0
 
+//! The maximum amount of time the realtime loop should take (in nanoseconds).
+#define MAX_RT_LOOP_TIME_NS                                               100000
+
 #endif // ROBOT_INVARIANT_DEFS_H

@@ -31,6 +31,7 @@ include_directories(../../robot_definitions)
 
 #common commands for building c++ executables and libraries
 rosbuild_add_library(controller_metadata SHARED src/controller_metadata.cpp)
+orocos_library(RtCheck src/RtCheck.cpp)
 #rosbuild_add_library(gui_publish_timer SHARED src/GuiPublishTimer.cpp)
 #orocos_library(gui_publish_timer SHARED src/GuiPublishTimer.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
