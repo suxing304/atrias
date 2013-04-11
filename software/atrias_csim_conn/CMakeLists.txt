@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6.3)
-project(atrias_sim_conn)
+project(atrias_csim_conn)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 rosbuild_init()
 

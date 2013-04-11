@@ -1,17 +1,14 @@
-#include "atrias_csim_conn/CSimConn.h"
+#include "atrias_csim_conn/CSimConn.hpp"
 
 namespace atrias {
-
 namespace cSimConn {
 
 CSimConn::CSimConn(std::string name) :
          RTT::TaskContext(name),
-         newStateCallback("newStateCallback")
+         runSystem("runSystem")
 {
-	this->provides("connector")
-	    ->addOperation("sendControllerOutput", &CSimConn::sendControllerOutput, this, RTT::ClientThread);
 	this->requires("rtOps")
-	    ->addOperationCaller(newStateCallback);
+	    ->addOperationCaller(runSystem);
 
 	// Initialize the state.
 	robotState.lLeg.hip.legBodyAngle = robotState.rLeg.hip.legBodyAngle = 1.5 * M_PI;
@@ -97,7 +94,7 @@ bool CSimConn::configureHook() {
 		log(RTT::Error) << "[CSimConn] Failed to connect to RTOps!" << RTT::endlog();
 		return false;
 	}
-	newStateCallback = peer->provides("rtOps")->getOperation("newStateCallback");
+	runSystem = peer->provides("rtOps")->getOperation("runSystem");
 	log(RTT::Info) << "[CSimConn] Connected to RTOps." << RTT::endlog();
 	log(RTT::Info) << "[CSimConn] configured!" << RTT::endlog();
 	return true;
@@ -117,12 +114,7 @@ void CSimConn::updateHook() {
 	robotState.rLeg.halfA = simLegHalf(robotState.rLeg.halfA, cOut.rLeg.motorCurrentA, Half::A);
 	robotState.rLeg.halfB = simLegHalf(robotState.rLeg.halfB, cOut.rLeg.motorCurrentB, Half::B);
 
-	newStateCallback(robotState);
-}
-
-void CSimConn::sendControllerOutput(atrias_msgs::controller_output controller_output) {
-	cOut = controller_output;
-	return;
+	cOut = runSystem(robotState);
 }
 
 ORO_CREATE_COMPONENT(CSimConn)

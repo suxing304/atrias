@@ -1,5 +1,5 @@
-#ifndef CSIMCONN_H
-#define CSIMCONN_H
+#ifndef CSIMCONN_HPP
+#define CSIMCONN_HPP
 
 /** @file
   * @brief This is the main class for the C++-based simulation connector.
@@ -24,7 +24,7 @@
 #define HIP_GEARED_TRQ_CONST 8.35057714286
 
 /** @brief The hip's moment of inertia
-  * Not very accurate.
+  * Not very accurate, but "close enough" to see if the controller will basically work right.
   */
 #define HIP_INERTIA 1.0
 
@@ -41,7 +41,6 @@
 #define LEG_FRICTION_AMPS 5.0
 
 namespace atrias {
-
 namespace cSimConn {
 
 /** @brief This is the type for \a Hip
@@ -67,15 +66,31 @@ enum class Half: Half_t {
 };
 
 class CSimConn : public RTT::TaskContext {
+	public:
+		/** @brief Initializes the Sim Connector
+		  * @param name The name for this component.
+		  */
+		CSimConn(std::string name);
+		
+		/** @brief Configures this component.
+		  * Run by Orocos.
+		  */
+		bool configureHook();
+
+		/** @brief Called periodically by Orocos; runs the sim.
+		  */
+		void updateHook();
+
 	private:
 		/** @brief This holds the current controller output.
 		  */
 		atrias_msgs::controller_output cOut;
 
 		/** @brief By calling this, we cycle RT Ops.
+		  * @return The controller output and medulla state to command.
 		  */
-		RTT::OperationCaller<void(atrias_msgs::robot_state)>
-			newStateCallback;
+		RTT::OperationCaller<atrias_msgs::controller_output(atrias_msgs::robot_state&)>
+			runSystem;
 
 		/** @brief This stores the current robot state.
 		  */
@@ -95,32 +110,11 @@ class CSimConn : public RTT::TaskContext {
 		  * @return        The new leg half.
 		  */
 		atrias_msgs::robot_state_legHalf simLegHalf(atrias_msgs::robot_state_legHalf& legHalf, double current, Half half);
-	
-	public:
-		/** @brief Initializes the Sim Connector
-		  * @param name The name for this component.
-		  */
-		CSimConn(std::string name);
-		
-		/** @brief Called by RT Ops w/ update controller torques.
-		  * @param controller_output The new controller output.
-		  */
-		void sendControllerOutput(atrias_msgs::controller_output controller_output);
-		
-		/** @brief Configures this component.
-		  * Run by Orocos.
-		  */
-		bool configureHook();
-
-		/** @brief Called periodically by Orocos; runs the sim.
-		  */
-		void updateHook();
 };
 
 }
-
 }
 
-#endif // CSIMCONN_H
+#endif // CSIMCONN_HPP
 
 // vim: noexpandtab
