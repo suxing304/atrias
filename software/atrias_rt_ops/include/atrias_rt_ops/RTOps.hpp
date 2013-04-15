@@ -18,6 +18,9 @@ class RTOps;
 #include <rtt/TaskContext.hpp> // We subclass this in order to be a component.
 #include <rtt/Component.hpp>   // We need a macro from this to build a component
 
+// ATRIAS
+#include "RtPrinter.hpp"       // For printing in HRT
+
 // Namespace for the whole ATRIAS project
 namespace atrias {
 // Namespace just for this component of the overall system
@@ -33,6 +36,11 @@ class RTOps : public RTT::TaskContext {
 		  * Orocos calls this -- our code should never call it directly.
 		  */
 		RTOps(const std::string &name);
+	
+	private:
+		// A pointer to the main RtPrinter instance, for debugging and other
+		// messages.
+		RtPrinter *rtPrinter;
 };
 
 // Closing namespace rtOps
