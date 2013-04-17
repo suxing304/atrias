@@ -8,8 +8,23 @@ namespace rtOps {
 RTOps::RTOps(const std::string &name) :
 	RTT::TaskContext(name) // We subclass this, so call its constructor
 {
-	// Initialize HRT printing service
+	// Initialize subsystems of RT Ops
+	this->mainLoop = new MainLoop(this);
 	this->rtPrinter = new RtPrinter(this);
+}
+
+RTOps::~RTOps() {
+	// Free objects, zero out pointers for good practice
+	delete(this->mainLoop);
+	this->mainLoop = nullptr;
+
+	delete(this->rtPrinter);
+	this->rtPrinter = nullptr;
+}
+
+RtPrinter& RTOps::getRtPrinter() const {
+	// Simply return a reference
+	return *this->rtPrinter;
 }
 
 // Tell Orocos what class to make a component

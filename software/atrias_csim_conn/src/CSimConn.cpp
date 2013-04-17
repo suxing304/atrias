@@ -94,7 +94,7 @@ bool CSimConn::configureHook() {
 		log(RTT::Error) << "[CSimConn] Failed to connect to RTOps!" << RTT::endlog();
 		return false;
 	}
-	runSystem = peer->provides("rtOps")->getOperation("runSystem");
+	runSystem = peer->getOperation("runSystem");
 	log(RTT::Info) << "[CSimConn] Connected to RTOps." << RTT::endlog();
 	log(RTT::Info) << "[CSimConn] configured!" << RTT::endlog();
 	return true;

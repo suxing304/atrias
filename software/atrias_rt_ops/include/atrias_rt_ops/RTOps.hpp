@@ -19,6 +19,7 @@ class RTOps;
 #include <rtt/Component.hpp>   // We need a macro from this to build a component
 
 // ATRIAS
+#include "MainLoop.hpp"        // The main loop for RT Ops
 #include "RtPrinter.hpp"       // For printing in HRT
 
 // Namespace for the whole ATRIAS project
@@ -36,8 +37,22 @@ class RTOps : public RTT::TaskContext {
 		  * Orocos calls this -- our code should never call it directly.
 		  */
 		RTOps(const std::string &name);
+
+		/**
+		  * @brief The destructor for this class.
+		  */
+		~RTOps();
+
+		/**
+		  * @brief Accessor function for the RtPrinter instance.
+		  * @return A reference to the main RtPrinter instance.
+		  */
+		RtPrinter& getRtPrinter() const;
 	
 	private:
+		// A pointer to the MainLoop instance.
+		MainLoop  *mainLoop;
+
 		// A pointer to the main RtPrinter instance, for debugging and other
 		// messages.
 		RtPrinter *rtPrinter;
