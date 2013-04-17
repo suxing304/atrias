@@ -1,16 +1,16 @@
 /**
   * @file ATC_FORC_CONTROL_DEMO.hpp
   * @author Mikhail Jones
-  * @brief This implements a demo force controller.
+  * @brief This implements a demo force controller
   */
-  
+   
 #include "atc_force_control_demo/ATCForceControlDemo.hpp"
 
 // The namespaces this controller resides in
 namespace atrias {
 namespace controller {
 
-// This constructor call is much simpler.
+// This constructor call is much simpler
 ATCForceControlDemo::ATCForceControlDemo(string name) :
 	ATC(name),
 	ascCommonToolkit(this, "ascCommonToolkit"),
@@ -25,12 +25,12 @@ ATCForceControlDemo::ATCForceControlDemo(string name) :
 {
 	// Initialize
 	lt = rt = 0.0;
-	duration = 3.0;
+	duration = 10.0;
 }
 
-/* @brief This is the main function for the top-level controller.
- * @param rs The robot state is an inherited member.
- * @param co The controller output is an inhereted member.
+/* @brief This is the main function for the top-level controller
+ * @param rs The robot state is an inherited member
+ * @param co The controller output is an inhereted member
  */
 void ATCForceControlDemo::controller() {
 	
@@ -42,7 +42,7 @@ void ATCForceControlDemo::controller() {
 	 * setShutdownEnabled(true/false) // Enable or disable the shutdown controller
 	 */
 	
-	// Startup is handled by the ATC class.
+	// Startup is handled by the ATC class
 	setStartupEnabled(true);
 	
 	// Update current robot state
@@ -73,6 +73,9 @@ void ATCForceControlDemo::controller() {
 		
 			// Compute and set motor current values
 			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fl, rs.lLeg, rs.position);
+			
+			// Compute and log computed leg forces
+			tempLegForce = ascLegForce.compute(rs.lLeg, rs.position);
 			break;
 			
 		// Force control - sinewave
@@ -85,6 +88,9 @@ void ATCForceControlDemo::controller() {
 		
 			// Compute and set motor current values
 			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fl, rs.lLeg, rs.position);
+			
+			// Compute and log computed leg forces
+			tempLegForce = ascLegForce.compute(rs.lLeg, rs.position);
 			break;
 			
 		// Force control - automated sequence
@@ -93,7 +99,10 @@ void ATCForceControlDemo::controller() {
 			fl = automateForceTest(lt);
 		
 			// Compute and set motor current values
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fl, rs.lLeg, rs.position);		
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fl, rs.lLeg, rs.position);
+			
+			// Compute and log computed leg forces
+			tempLegForce = ascLegForce.compute(rs.lLeg, rs.position);		
 			break;
 			
 	}
@@ -120,6 +129,9 @@ void ATCForceControlDemo::controller() {
 		
 			// Compute and set motor current values
 			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForce.control(fr, rs.rLeg, rs.position);
+			
+			// Compute and log computed leg forces
+			tempLegForce = ascLegForce.compute(rs.rLeg, rs.position);
 			break;
 			
 		// Force control - sinewave
@@ -132,6 +144,9 @@ void ATCForceControlDemo::controller() {
 		
 			// Compute and set motor current values
 			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fr, rs.lLeg, rs.position);
+			
+			// Compute and log computed leg forces
+			tempLegForce = ascLegForce.compute(rs.rLeg, rs.position);
 			break;
 			
 		// Force control - automated sequence
@@ -140,7 +155,10 @@ void ATCForceControlDemo::controller() {
 			fr = automateForceTest(rt);
 		
 			// Compute and set motor current values
-			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForce.control(fr, rs.rLeg, rs.position);	
+			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForce.control(fr, rs.rLeg, rs.position);
+			
+			// Compute and log computed leg forces
+			tempLegForce = ascLegForce.compute(rs.rLeg, rs.position);
 			break;
 			
 	}
@@ -165,7 +183,7 @@ void ATCForceControlDemo::controller() {
 // updateState
 void ATCForceControlDemo::updateState() {
 
-	// Safety: If nothing else forces will be zero.
+	// Safety: If nothing else forces will be zero
 	fl.fx = fr.fx = 0.0;
 	fl.fz = fr.fz = 0.0;
 	fl.dfx = fr.dfx = 0.0;
@@ -223,7 +241,7 @@ void ATCForceControlDemo::hipControl() {
 // automateForceTest
 LegForce ATCForceControlDemo::automateForceTest(double t) {
 
-	// Safety: If nothing else forces will be zero.
+	// Safety: If nothing else forces will be zero
 	legForce.fx = 0.0; 
 	legForce.fz = 0.0; 
 	legForce.dfx = 0.0; 
@@ -231,7 +249,7 @@ LegForce ATCForceControlDemo::automateForceTest(double t) {
 
 	// Piecewise force function
 	if (t >= 0*duration && t < 1*duration) {
-		legForce.fz = 0.0;
+		legForce.fz = -5.0;
 	
 	} else if (t >= 1*duration && t < 2*duration) {
 		legForce.fz = -100.0;
@@ -261,7 +279,7 @@ LegForce ATCForceControlDemo::automateForceTest(double t) {
 		legForce.fz = -100.0;
 	
 	} else if (t >= 10*duration && t < 11*duration) {
-		legForce.fz = 0.0;
+		legForce.fz = -5.0;
 	
 	} else if (t >= 11*duration && t < 12*duration) {
 		legForce.fz = -250.0;
@@ -273,13 +291,13 @@ LegForce ATCForceControlDemo::automateForceTest(double t) {
 		legForce.fz = -250.0;
 	
 	} else if (t >= 14*duration && t < 15*duration) {
-		legForce.fz = 0.0;
+		legForce.fz = -5.0;
 	
 	} else if (t >= 15*duration && t < 16*duration) {
 		legForce.fz = -500.0;
 	
 	} else if (t >= 16*duration && t < 17*duration) {
-		legForce.fz = 0.0;
+		legForce.fz = -5.0;
 	
 	}	
 	
