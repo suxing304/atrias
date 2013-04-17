@@ -35,11 +35,18 @@ class RtPrinter : public RTT::Service {
 		  * @param rt_ops A pointer to the main RT Ops instance
 		  */
 		RtPrinter(RTOps *rt_ops);
+
+		/**
+		  * @brief This operation prints out an int. This is realtime-safe.
+		  * @param level The logging level (RTT::Info, RTT::Warning, etc...)
+		  * @param num   The integer to print out.
+		  */
+		void printInt(RTT::LoggerLevel level, int num);
 	
 		/**
 		  * @brief This operation prints out a string. This is realtime-safe.
 		  * @param level The logging level (RTT::Info, RTT::Warning, etc)
-		  * @param msg The string to print out.
+		  * @param msg   The string to print out.
 		  * This may also be called directly from within RT Ops to print out a string.
 		  */
 		void printString(RTT::LoggerLevel level, char* msg);
@@ -48,8 +55,19 @@ class RtPrinter : public RTT::Service {
 		/**
 		  * @brief This operation is the backend for printing out a string.
 		  * @param level The logging level (RTT::Info, RTT::Warning, etc)
+		  * @param num   The integer to print out.
+		  * This must be called asynchronously for realtime-safety.
+		  */
+		void printIntBackend(RTT::LoggerLevel level, int num);
+
+		// OperationCaller for the above operation
+		RTT::OperationCaller<void(RTT::LoggerLevel, int)> printIntBackendCaller;
+
+		/**
+		  * @brief This operation is the backend for printing out a string.
+		  * @param level The logging level (RTT::Info, RTT::Warning, etc)
 		  * @param msg   The string to print out.
-		  * This operation should only be called by this class
+		  * This must be called asynchronously for realtime-safety.
 		  */
 		void printStringBackend(RTT::LoggerLevel level, RTT::rt_string msg);
 
