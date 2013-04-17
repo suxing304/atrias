@@ -37,23 +37,46 @@ class RtPrinter : public RTT::Service {
 		RtPrinter(RTOps *rt_ops);
 
 		/**
+		  * @brief This operation prints out a double. This is realtime-safe.
+		  * @param level The logging level (RTT::Info, RTT::Warning, etc...)
+		  * @param num   The number to print out.
+		  * @return The double printed.
+		  * This may be called from within RT Ops.
+		  */
+		double printDouble(RTT::LoggerLevel level, double num);
+
+		/**
 		  * @brief This operation prints out an int. This is realtime-safe.
 		  * @param level The logging level (RTT::Info, RTT::Warning, etc...)
 		  * @param num   The integer to print out.
+		  * @return The int printed.
+		  * This may be used from within RT Ops to print an integer.
 		  */
-		void printInt(RTT::LoggerLevel level, int num);
+		int printInt(RTT::LoggerLevel level, int num);
 	
 		/**
 		  * @brief This operation prints out a string. This is realtime-safe.
 		  * @param level The logging level (RTT::Info, RTT::Warning, etc)
 		  * @param msg   The string to print out.
+		  * @return A pointer to the string printed.
 		  * This may also be called directly from within RT Ops to print out a string.
 		  */
-		void printString(RTT::LoggerLevel level, char* msg);
+		char* printString(RTT::LoggerLevel level, char* msg);
 	
 	private:
 		/**
-		  * @brief This operation is the backend for printing out a string.
+		  * @brief This operation is the backend for printing out a double.
+		  * @param level The logging level (RTT::Info, RTT::Warning, etc...) at which to print.
+		  * @param num   The floating point value to print out.
+		  * This must be called asynchronously for realtime-safety.
+		  */
+		void printDoubleBackend(RTT::LoggerLevel level, double num);
+
+		// OperationCaller for the above operation
+		RTT::OperationCaller<void(RTT::LoggerLevel, double)> printDoubleBackendCaller;
+
+		/**
+		  * @brief This operation is the backend for printing out an integer.
 		  * @param level The logging level (RTT::Info, RTT::Warning, etc)
 		  * @param num   The integer to print out.
 		  * This must be called asynchronously for realtime-safety.
