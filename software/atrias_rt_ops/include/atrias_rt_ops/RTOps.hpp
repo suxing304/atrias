@@ -20,7 +20,7 @@ class RTOps;
 
 // ATRIAS
 #include "MainLoop.hpp"        // The main loop for RT Ops
-#include "RtPrinter.hpp"       // For printing in HRT
+#include "RTPrinter.hpp"       // For printing in HRT
 
 // Namespace for the whole ATRIAS project
 namespace atrias {
@@ -44,18 +44,18 @@ class RTOps : public RTT::TaskContext {
 		~RTOps();
 
 		/**
-		  * @brief Accessor function for the RtPrinter instance.
-		  * @return A reference to the main RtPrinter instance.
+		  * @brief Accessor function for the RTPrinter instance.
+		  * @return A reference to the main RTPrinter instance.
 		  */
-		RtPrinter& getRtPrinter() const;
+		RTPrinter& getRTPrinter() const;
 	
 	private:
 		// A pointer to the MainLoop instance.
 		MainLoop  *mainLoop;
 
-		// A pointer to the main RtPrinter instance, for debugging and other
+		// A pointer to the main RTPrinter instance, for debugging and other
 		// messages.
-		RtPrinter *rtPrinter;
+		RTPrinter *rtPrinter;
 };
 
 // Closing namespace rtOps

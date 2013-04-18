@@ -10,7 +10,7 @@ RTOps::RTOps(const std::string &name) :
 {
 	// Initialize subsystems of RT Ops
 	this->mainLoop = new MainLoop(this);
-	this->rtPrinter = new RtPrinter(this);
+	this->rtPrinter = new RTPrinter(this);
 }
 
 RTOps::~RTOps() {
@@ -22,7 +22,7 @@ RTOps::~RTOps() {
 	this->rtPrinter = nullptr;
 }
 
-RtPrinter& RTOps::getRtPrinter() const {
+RTPrinter& RTOps::getRTPrinter() const {
 	// Simply return a reference
 	return *this->rtPrinter;
 }

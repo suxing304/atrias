@@ -3,7 +3,7 @@
 #define RTPRINTER_HPP
 
 /**
-  * @file RtPrinter.hpp
+  * @file RTPrinter.hpp
   * @author Ryan Van Why
   * @brief This class allows RT Ops and other components to print basic messages in a realtime-safe manner.
   */
@@ -11,7 +11,7 @@
 // Forward declaration to make RTOps compile
 namespace atrias {
 namespace rtOps {
-class RtPrinter;
+class RTPrinter;
 }
 }
 
@@ -28,13 +28,13 @@ class RtPrinter;
 namespace atrias {
 namespace rtOps {
 
-class RtPrinter : public RTT::Service {
+class RTPrinter : public RTT::Service {
 	public:
 		/**
 		  * @brief The constructor for this class
 		  * @param rt_ops A pointer to the main RT Ops instance
 		  */
-		RtPrinter(RTOps *rt_ops);
+		RTPrinter(RTOps *rt_ops);
 
 		/**
 		  * @brief This operation prints out a double. This is realtime-safe.
