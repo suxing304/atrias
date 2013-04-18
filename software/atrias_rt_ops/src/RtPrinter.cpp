@@ -11,24 +11,31 @@ RtPrinter::RtPrinter(RTOps *rt_ops) :
 	// Register our operations.
 	rt_ops->addOperation("printDouble", &RtPrinter::printDouble, this, RTT::ClientThread)
 		.doc("Use this operation to print a double in a realtime-safe manner.");
-	
+
 	rt_ops->addOperation("printDoubleBackend", &RtPrinter::printDoubleBackend, this, RTT::OwnThread)
 		.doc("Send this operation asynchronously to print an int in realtime.");
 
+	rt_ops->addOperation("printEnd", &RtPrinter::printEnd, this, RTT::ClientThread)
+		.doc("Use this operation to end the printing of a line in a realtime-safe manner");
+
+	rt_ops->addOperation("printEndBackend", &RtPrinter::printEndBackend, this, RTT::OwnThread)
+		.doc("Send this operation asynchronously to end a printed line in realtime.");
+
 	rt_ops->addOperation("printInt", &RtPrinter::printInt, this, RTT::ClientThread)
 		.doc("Use this operation to print an integer in a realtime-safe manner.");
-	
+
 	rt_ops->addOperation("printIntBackend", &RtPrinter::printIntBackend, this, RTT::OwnThread)
 		.doc("Send this operation asynchronously to print an int in realtime.");
 
 	rt_ops->addOperation("printString", &RtPrinter::printString, this, RTT::ClientThread)
 		.doc("Use this operation to print a simple C-style string in a realtime-safe manner.");
-	
+
 	rt_ops->addOperation("printStringBackend", &RtPrinter::printStringBackend, this, RTT::OwnThread)
 		.doc("Send this operation asynchronously to print a string in realtime.");
-	
+
 	// Configure the operation callers
 	this->printDoubleBackendCaller = rt_ops->getOperation("printDoubleBackend");
+	this->printEndBackendCaller    = rt_ops->getOperation("printEndBackend");
 	this->printIntBackendCaller    = rt_ops->getOperation("printIntBackend");
 	this->printStringBackendCaller = rt_ops->getOperation("printStringBackend");
 }
@@ -40,6 +47,11 @@ double RtPrinter::printDouble(RTT::LoggerLevel level, double num) {
 
 	// Return the number printed, just to be nice (in case callers want that functionality).
 	return num;
+}
+
+void RtPrinter::printEnd(RTT::LoggerLevel level) {
+	// Send the operation; discard the result.
+	this->printEndBackendCaller.send(level);
 }
 
 int RtPrinter::printInt(RTT::LoggerLevel level, int num) {
@@ -62,6 +74,11 @@ void RtPrinter::printDoubleBackend(RTT::LoggerLevel level, double num) {
 	// This is run in RT Ops's main thread, which is not realtime.
 	// Therefore, we can do this without breaking the realtime loop's realtime.
 	RTT::log(level) << num;
+}
+
+void RtPrinter::printEndBackend(RTT::LoggerLevel level) {
+	// This function should always be run in RT Ops's main thread, not the realtime thread.
+	RTT::log(level) << RTT::endlog();
 }
 
 void RtPrinter::printIntBackend(RTT::LoggerLevel level, int num) {

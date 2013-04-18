@@ -46,6 +46,14 @@ class RtPrinter : public RTT::Service {
 		double printDouble(RTT::LoggerLevel level, double num);
 
 		/**
+		  * @brief This operation ends the printing of a line.
+		  * @param level The logging level (RTT::Info, RTT::Warning, etc...)
+		  * This should be called at the end of a line of printing to flush the buffer.
+		  * Otherwise, your printed text may not show up until the deployer is closed.
+		  */
+		void printEnd(RTT::LoggerLevel level);
+
+		/**
 		  * @brief This operation prints out an int. This is realtime-safe.
 		  * @param level The logging level (RTT::Info, RTT::Warning, etc...)
 		  * @param num   The integer to print out.
@@ -74,6 +82,16 @@ class RtPrinter : public RTT::Service {
 
 		// OperationCaller for the above operation
 		RTT::OperationCaller<void(RTT::LoggerLevel, double)> printDoubleBackendCaller;
+
+		/**
+		  * @brief This operation is the backend for ending the printing of a line
+		  * @param level The logging level (RTT::Info, RTT::Warning, etc...) at which to print.
+		  * This must be called asynchronously for realtime-safety.
+		  */
+		void printEndBackend(RTT::LoggerLevel level);
+
+		// OperationCaller for the above operation
+		RTT::OperationCaller<void(RTT::LoggerLevel)> printEndBackendCaller;
 
 		/**
 		  * @brief This operation is the backend for printing out an integer.
