@@ -3,6 +3,14 @@
 namespace atrias {
 namespace shared {
 
+void RtCheck::beginCycle() {
+	// Record the new deadline
+	deadline = RTT::os::TimeService::Instance()->getNSecs() + MAX_RT_LOOP_TIME_NS;
+
+	// Reset the missed deadline, if one had occurred
+	missedDeadline = false;
+}
+
 void RtCheck::check(char* location) {
 	// This is the amount of time we've overshot by -- negative if we haven't missed a deadline yet.
 	RTT::os::TimeService::nsecs overshoot = RTT::os::TimeService::Instance()->getNSecs() - deadline;
@@ -22,12 +30,13 @@ void RtCheck::check(char* location) {
 	}
 }
 
-void RtCheck::beginCycle() {
-	// Record the new deadline
-	deadline = RTT::os::TimeService::Instance()->getNSecs() + MAX_RT_LOOP_TIME_NS;
-
-	// Reset the missed deadline, if one had occurred
-	missedDeadline = false;
+void RtCheck::initPrintCallers(RTT::OperationCaller<void(RTT::LoggerLevel)>&        endCaller,
+                               RTT::OperationCaller<void(RTT::LoggerLevel, int)>&   intCaller,
+                               RTT::OperationCaller<void(RTT::LoggerLevel, char*)>& stringCaller)
+{
+	endCaller    = endCaller;
+	intCaller    = intCaller;
+	stringCaller = stringCaller;
 }
 
 // Initialize the static member variables
