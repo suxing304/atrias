@@ -20,6 +20,7 @@ class MainLoop;
 // ATRIAS
 #include <atrias_msgs/controller_output.h> // We return the controller output to the connector
 #include <atrias_msgs/robot_state.h>       // We receive the robot state from the connector.
+#include <atrias_shared/RtCheck.hpp>       // To check for missed deadlines.
 
 // RT Ops
 #include "atrias_rt_ops/RTOps.hpp" // We lets us point at the main RT Ops instance.

@@ -13,6 +13,7 @@
 #include <rtt/Logger.hpp>          // Temporary, to let us output messages to the console.
 #include <rtt/OperationCaller.hpp> // For realtime-safe printing.
 #include <rtt/os/TimeService.hpp>  // For retrieving and storing the time, in nanoseconds.
+#include <rtt/rt_string.hpp>       // Used in the stringCaller OperationCaller
 
 // ATRIAS
 #include <robot_invariant_defs.h> // For the maximum acceptable cycle time.
@@ -40,27 +41,27 @@ class RtCheck {
 
 		/**
 		  * @brief This initializes the operation callers used for realtime printing.
-		  * @param printEndCaller    The OperationCaller used to end a line.
-		  * @param printIntCaller    The OperationCaller used to print an integer.
-		  * @param printStringCaller The OperationCaller used to print a string.
+		  * @param printEndCallerOp    The OperationCaller used to end a line.
+		  * @param printIntCallerOp    The OperationCaller used to print an integer.
+		  * @param printStringCallerOp The OperationCaller used to print a string.
 		  * This should be called by RT Ops during initialization.
 		  */
-		static void initPrintCallers(RTT::OperationCaller<void(RTT::LoggerLevel)>&        endCaller,
-		                             RTT::OperationCaller<void(RTT::LoggerLevel, int)>&   intCaller,
-		                             RTT::OperationCaller<void(RTT::LoggerLevel, char*)>& stringCaller);
+		static void initPrintCallers(RTT::OperationCaller<void(RTT::LoggerLevel)>&                 endCallerOp,
+		                             RTT::OperationCaller<void(RTT::LoggerLevel, int)>&            intCallerOp,
+		                             RTT::OperationCaller<void(RTT::LoggerLevel, RTT::rt_string)>& stringCallerOp);
 
 	private:
 		// This cycle's deadline.
 		static RTT::os::TimeService::nsecs deadline;
 
 		// OperationCaller for the printEndBackend operation
-		static RTT::OperationCaller<void(RTT::LoggerLevel)>        endCaller;
+		static RTT::OperationCaller<void(RTT::LoggerLevel)>                 endCaller;
 
 		// OperationCaller for the printIntBackint operation
-		static RTT::OperationCaller<void(RTT::LoggerLevel, int)>   intCaller;
+		static RTT::OperationCaller<void(RTT::LoggerLevel, int)>            intCaller;
 
 		// OperationCaller for the printStringBackstring operation
-		static RTT::OperationCaller<void(RTT::LoggerLevel, char*)> stringCaller;
+		static RTT::OperationCaller<void(RTT::LoggerLevel, RTT::rt_string)> stringCaller;
 
 		// If we've already missed a deadline, to prevent
 		// a cascade of missed deadline reports and events.

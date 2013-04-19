@@ -101,10 +101,16 @@ bool CSimConn::configureHook() {
 }
 
 void CSimConn::updateHook() {
+	// Initialize realtime-safety checking
+	shared::RtCheck::beginCycle();
+	shared::RtCheck::check((char*) "CSimConn begin");
+
 	// Increment the time.
 	robotState.header.stamp.nsec += CONTROLLER_LOOP_PERIOD_NS;
 	robotState.header.stamp.sec  += robotState.header.stamp.nsec / SECOND_IN_NANOSECONDS;
 	robotState.header.stamp.nsec %= SECOND_IN_NANOSECONDS;
+
+	shared::RtCheck::check((char*) "CSimConn post header update.");
 
 	// Run the sim.
 	robotState.lLeg.hip   = simHip(robotState.lLeg.hip, Hip::LEFT);
@@ -114,7 +120,11 @@ void CSimConn::updateHook() {
 	robotState.rLeg.halfA = simLegHalf(robotState.rLeg.halfA, cOut.rLeg.motorCurrentA, Half::A);
 	robotState.rLeg.halfB = simLegHalf(robotState.rLeg.halfB, cOut.rLeg.motorCurrentB, Half::B);
 
+	shared::RtCheck::check((char*) "CSimConn post sim");
+
 	cOut = runSystem(robotState);
+
+	shared::RtCheck::check((char*) "CSimConn end");
 }
 
 ORO_CREATE_COMPONENT(CSimConn)

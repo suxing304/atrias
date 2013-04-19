@@ -20,28 +20,36 @@ void RtCheck::check(char* location) {
 		// We've missed a deadline!
 		// If we haven't already detected this missed deadline, print out a warning message.
 		if (!missedDeadline) {
-			log(RTT::Warning) << "Deadline missed by " << overshoot
-			                  << "ns detected at: " << location << RTT::endlog();
+			stringCaller.send(RTT::Warning, "Deadline missed by ");
+			intCaller.send(RTT::Warning, overshoot);
+			stringCaller.send(RTT::Warning, "ns detected at: ");
+			stringCaller.send(RTT::Warning, location);
+			endCaller.send(RTT::Warning);
 			
-			// Record that we've missed a deadline, so we don't
-			// get a pile of complaints at the same time.
+			// Record that we've missed a deadline, so we only get one warning in any
+			// given cycle
 			missedDeadline = true;
 		}
 	}
 }
 
-void RtCheck::initPrintCallers(RTT::OperationCaller<void(RTT::LoggerLevel)>&        endCaller,
-                               RTT::OperationCaller<void(RTT::LoggerLevel, int)>&   intCaller,
-                               RTT::OperationCaller<void(RTT::LoggerLevel, char*)>& stringCaller)
+void RtCheck::initPrintCallers(RTT::OperationCaller<void(RTT::LoggerLevel)>&                 endCallerOp,
+                               RTT::OperationCaller<void(RTT::LoggerLevel, int)>&            intCallerOp,
+                               RTT::OperationCaller<void(RTT::LoggerLevel, RTT::rt_string)>& stringCallerOp)
 {
-	endCaller    = endCaller;
-	intCaller    = intCaller;
-	stringCaller = stringCaller;
+	log(RTT::Info) << "[RtCheck] Initializing OperationCallers." << RTT::endlog();
+
+	endCaller    = endCallerOp;
+	intCaller    = intCallerOp;
+	stringCaller = stringCallerOp;
 }
 
 // Initialize the static member variables
 RTT::os::TimeService::nsecs RtCheck::deadline       = 0;
 bool                        RtCheck::missedDeadline = false;
+RTT::OperationCaller<void(RTT::LoggerLevel)>                 RtCheck::endCaller;
+RTT::OperationCaller<void(RTT::LoggerLevel, int)>            RtCheck::intCaller;
+RTT::OperationCaller<void(RTT::LoggerLevel, RTT::rt_string)> RtCheck::stringCaller;
 
 }
 }

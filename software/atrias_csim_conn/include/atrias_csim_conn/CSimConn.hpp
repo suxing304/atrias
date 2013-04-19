@@ -10,8 +10,10 @@
 #include <rtt/Component.hpp>
 #include <rtt/OperationCaller.hpp>
 
+// ATRIAS
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
+#include <atrias_shared/RtCheck.hpp>
 #include <atrias_shared/globals.h>
 #include <robot_invariant_defs.h>
 
