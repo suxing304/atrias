@@ -70,6 +70,19 @@ enum class ControllerManagerError: ControllerManagerError_t {
 
 namespace rtOps {
 
+/**
+  * @brief This is the type send from the GUI to RT Ops to command the state machine to change states.
+  */
+typedef uint8_t GuiCommand_t;
+
+enum class GuiCommand: GuiCommand_t {
+    INVALID = 0, // Something's wrong -- this command isn't valid.
+    STOP,        // Disables the robot (possibly after some delay, for soft shutdown).
+    ENABLE,      // Enables the robot
+    ESTOP,       // Triggers the estop
+    RESET        // Resets the robot.
+};
+
 /** @brief This holds RT Ops's state -- also used by the Controller Manager
   * to command RT Ops into different states.
   */
