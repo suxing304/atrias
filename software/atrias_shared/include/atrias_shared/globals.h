@@ -89,12 +89,13 @@ enum class GuiCommand: GuiCommand_t {
 typedef uint8_t RtOpsState_t;
 
 enum class RtOpsState: RtOpsState_t {
-    NO_CONTROLLER_LOADED = 0,
-    DISABLED, //Controller is loaded but not enabled
-    ENABLED,  //Controller is both loaded and enabled
+    INVALID = 0, // The state is invalid (should never happen
+    DISABLED,
+    ENABLED,
     RESET,
     E_STOP,
-    HALT
+    HALT,
+    STOP        // Smooth shutdown is happening
 };
 
 /** @brief Represents an RT Ops event.
