@@ -9,8 +9,9 @@ RTOps::RTOps(const std::string &name) :
 	RTT::TaskContext(name) // We subclass this, so call its constructor
 {
 	// Initialize subsystems of RT Ops
-	this->mainLoop = new MainLoop(this);
-	this->rtPrinter = new RTPrinter(this);
+	this->mainLoop          = new MainLoop(this);
+	this->rtPrinter         = new RTPrinter(this);
+	this->robotStateHandler = new RobotStateHandler();
 }
 
 RTOps::~RTOps() {
@@ -20,11 +21,19 @@ RTOps::~RTOps() {
 
 	delete(this->rtPrinter);
 	this->rtPrinter = nullptr;
+
+	delete(this->robotStateHandler);
+	this->robotStateHandler = nullptr;
 }
 
 RTPrinter& RTOps::getRTPrinter() const {
 	// Simply return a reference
 	return *this->rtPrinter;
+}
+
+RobotStateHandler& RTOps::getRobotStateHandler() const {
+	// Return a reference, plain and simple
+	return *this->robotStateHandler;
 }
 
 // Tell Orocos what class to make a component

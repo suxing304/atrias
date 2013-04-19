@@ -19,8 +19,9 @@ class RTOps;
 #include <rtt/Component.hpp>   // We need a macro from this to build a component
 
 // ATRIAS
-#include "MainLoop.hpp"        // The main loop for RT Ops
-#include "RTPrinter.hpp"       // For printing in HRT
+#include "MainLoop.hpp"          // The main loop for RT Ops
+#include "RTPrinter.hpp"         // For printing in HRT
+#include "RobotStateHandler.hpp" // Manages our robot state
 
 // Namespace for the whole ATRIAS project
 namespace atrias {
@@ -48,14 +49,23 @@ class RTOps : public RTT::TaskContext {
 		  * @return A reference to the main RTPrinter instance.
 		  */
 		RTPrinter& getRTPrinter() const;
+
+		/**
+		  * @brief Accessor function for the RobotStateHandler instance.
+		  * @return A reference to the main RobotStateHandler instance.
+		  */
+		RobotStateHandler& getRobotStateHandler() const;
 	
 	private:
 		// A pointer to the MainLoop instance.
-		MainLoop  *mainLoop;
+		MainLoop          *mainLoop;
 
 		// A pointer to the main RTPrinter instance, for debugging and other
 		// messages.
-		RTPrinter *rtPrinter;
+		RTPrinter         *rtPrinter;
+
+		// A pointer to the main RobotStateHandler instance
+		RobotStateHandler *robotStateHandler;
 };
 
 // Closing namespace rtOps

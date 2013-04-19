@@ -15,9 +15,11 @@ MainLoop::MainLoop(RTOps *rt_ops) :
 }
 
 atrias_msgs::controller_output& MainLoop::runSystem(atrias_msgs::robot_state& robotState) {
-	// We don't really do much right now...
+	shared::RtCheck::check((char*) "rtOps::MainLoop begin.");
 
-	// Check for missed deadlines.
+	// Update the robot state
+	this->rtOps->getRobotStateHandler().setRobotState(robotState);
+
 	shared::RtCheck::check((char*) "rtOps::MainLoop end.");
 	return co;
 }
