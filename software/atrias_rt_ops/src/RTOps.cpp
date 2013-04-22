@@ -9,6 +9,7 @@ RTOps::RTOps(const std::string &name) :
 	RTT::TaskContext(name) // We subclass this, so call its constructor
 {
 	// Initialize subsystems of RT Ops
+	this->guiManager        = new GuiManager(this);
 	this->mainLoop          = new MainLoop(this);
 	this->rtPrinter         = new RTPrinter(this);
 	this->robotStateHandler = new RobotStateHandler();
@@ -17,6 +18,9 @@ RTOps::RTOps(const std::string &name) :
 
 RTOps::~RTOps() {
 	// Free objects, zero out pointers for good practice
+	delete(this->guiManager);
+	this->guiManager = nullptr;
+
 	delete(this->mainLoop);
 	this->mainLoop = nullptr;
 

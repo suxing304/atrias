@@ -73,10 +73,10 @@ namespace rtOps {
 /**
   * @brief This is the type send from the GUI to RT Ops to command the state machine to change states.
   */
-typedef uint8_t GuiCommand_t;
+typedef uint8_t GuiRTOpsCommand_t;
 
-enum class GuiCommand: GuiCommand_t {
-    INVALID = 0, // Something's wrong -- this command isn't valid.
+enum class GuiRTOpsCommand: GuiRTOpsCommand_t {
+    INVALID = 0, // This represents an invalid command
     STOP,        // Disables the robot (possibly after some delay, for soft shutdown).
     ENABLE,      // Enables the robot
     ESTOP,       // Triggers the estop

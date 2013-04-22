@@ -19,6 +19,7 @@ class RTOps;
 #include <rtt/Component.hpp>   // We need a macro from this to build a component
 
 // ATRIAS
+#include "GuiManager.hpp"        // Handles comms with the GUI
 #include "MainLoop.hpp"          // The main loop for RT Ops
 #include "RTPrinter.hpp"         // For printing in HRT
 #include "RobotStateHandler.hpp" // Manages our robot state
@@ -58,6 +59,9 @@ class RTOps : public RTT::TaskContext {
 		RobotStateHandler& getRobotStateHandler() const;
 	
 	private:
+		// The GuiManager instance.
+		GuiManager        *guiManager;
+
 		// A pointer to the MainLoop instance.
 		MainLoop          *mainLoop;
 
