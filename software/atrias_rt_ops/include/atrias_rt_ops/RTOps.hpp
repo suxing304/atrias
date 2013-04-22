@@ -22,6 +22,7 @@ class RTOps;
 #include "MainLoop.hpp"          // The main loop for RT Ops
 #include "RTPrinter.hpp"         // For printing in HRT
 #include "RobotStateHandler.hpp" // Manages our robot state
+#include "StateMachine.hpp"      // The main state machine
 
 // Namespace for the whole ATRIAS project
 namespace atrias {
@@ -66,6 +67,9 @@ class RTOps : public RTT::TaskContext {
 
 		// A pointer to the main RobotStateHandler instance
 		RobotStateHandler *robotStateHandler;
+
+		// A pointer to the main StateMachine instance
+		StateMachine      *stateMachine;
 };
 
 // Closing namespace rtOps

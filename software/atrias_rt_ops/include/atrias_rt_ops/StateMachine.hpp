@@ -31,13 +31,19 @@ class StateMachine {
 		  */
 		StateMachine(RTOps *rt_ops);
 
+		/**
+		  * @brief This runs the State Machine
+		  * This should be called each cycle.
+		  */
+		void run();
+
 	private:
 		// A pointer to the main RT Ops instance
 		RTOps      *rtOps;
 
 		// Our state
 		RtOpsState state;
-}
+};
 
 // End namespaces
 }

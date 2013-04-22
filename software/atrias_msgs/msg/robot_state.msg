@@ -12,6 +12,11 @@ robot_state_timing timing
 # Whether or not safeties should be disabled. This will, in the future, be replaced w/ a GUI-controlled overrides system.
 bool disableSafeties
 
+# The number of medullas in different states
+uint8 medullasInError
+uint8 medullasInHalt
+uint8 medullasInRun
+
 robot_state_leg lLeg
 robot_state_leg rLeg
 

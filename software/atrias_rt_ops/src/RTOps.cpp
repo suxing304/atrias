@@ -12,6 +12,7 @@ RTOps::RTOps(const std::string &name) :
 	this->mainLoop          = new MainLoop(this);
 	this->rtPrinter         = new RTPrinter(this);
 	this->robotStateHandler = new RobotStateHandler();
+	this->stateMachine      = new StateMachine(this);
 }
 
 RTOps::~RTOps() {
@@ -24,6 +25,9 @@ RTOps::~RTOps() {
 
 	delete(this->robotStateHandler);
 	this->robotStateHandler = nullptr;
+
+	delete(this->stateMachine);
+	this->stateMachine = nullptr;
 }
 
 RTPrinter& RTOps::getRTPrinter() const {
