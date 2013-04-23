@@ -11,6 +11,7 @@ RTOps::RTOps(const std::string &name) :
 	// Initialize subsystems of RT Ops
 	this->guiManager        = new GuiManager(this);
 	this->mainLoop          = new MainLoop(this);
+	this->opsLogger         = new OpsLogger(this);
 	this->rtPrinter         = new RTPrinter(this);
 	this->robotStateHandler = new RobotStateHandler();
 	this->stateMachine      = new StateMachine(this);
@@ -24,6 +25,9 @@ RTOps::~RTOps() {
 	delete(this->mainLoop);
 	this->mainLoop = nullptr;
 
+	delete(this->opsLogger);
+	this->opsLogger = nullptr;
+
 	delete(this->rtPrinter);
 	this->rtPrinter = nullptr;
 
@@ -32,6 +36,11 @@ RTOps::~RTOps() {
 
 	delete(this->stateMachine);
 	this->stateMachine = nullptr;
+}
+
+OpsLogger& RTOps::getOpsLogger() const {
+	// Return the reference
+	return *this->opsLogger;
 }
 
 RTPrinter& RTOps::getRTPrinter() const {

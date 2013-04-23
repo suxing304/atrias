@@ -21,6 +21,7 @@ class RTOps;
 // ATRIAS
 #include "GuiManager.hpp"        // Handles comms with the GUI
 #include "MainLoop.hpp"          // The main loop for RT Ops
+#include "OpsLogger.hpp"         // Handles logging and event sending
 #include "RTPrinter.hpp"         // For printing in HRT
 #include "RobotStateHandler.hpp" // Manages our robot state
 #include "StateMachine.hpp"      // The main state machine
@@ -47,6 +48,12 @@ class RTOps : public RTT::TaskContext {
 		~RTOps();
 
 		/**
+		  * @brief Accessor function for the OpsLogger instance.
+		  * @return A reference to the main OpsLogger instance.
+		  */
+		OpsLogger& getOpsLogger() const;
+
+		/**
 		  * @brief Accessor function for the RTPrinter instance.
 		  * @return A reference to the main RTPrinter instance.
 		  */
@@ -64,6 +71,9 @@ class RTOps : public RTT::TaskContext {
 
 		// A pointer to the MainLoop instance.
 		MainLoop          *mainLoop;
+
+		// The main OpsLogger instance
+		OpsLogger         *opsLogger;
 
 		// A pointer to the main RTPrinter instance, for debugging and other
 		// messages.

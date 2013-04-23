@@ -13,6 +13,6 @@ find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
 include_directories(../../robot_definitions/)
-orocos_component(RTOps src/GuiManager.cpp src/MainLoop.cpp src/RTOps.cpp src/RTPrinter.cpp src/RobotStateHandler.cpp src/StateMachine.cpp)
+orocos_component(RTOps src/GuiManager.cpp src/MainLoop.cpp src/OpsLogger.cpp src/RTOps.cpp src/RTPrinter.cpp src/RobotStateHandler.cpp src/StateMachine.cpp)
 
 orocos_generate_package()
