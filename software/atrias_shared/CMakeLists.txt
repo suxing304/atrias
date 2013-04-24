@@ -31,7 +31,6 @@ include_directories(../../robot_definitions)
 
 rosbuild_add_library(controller_metadata SHARED src/controller_metadata.cpp)
 orocos_library(RtCheck src/RtCheck.cpp)
-orocos_library(EventManip src/EventManip.cpp)
 
 #rosbuild_add_executable(hello src/hello.cpp)
 

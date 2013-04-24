@@ -28,12 +28,6 @@ OpsLogger::OpsLogger(RTOps *rt_ops) :
 
 	// Set the policy
 	this->eventOut.createStream(policy);
-
-	this->sendEvent(RtOpsEvent::MISSED_DEADLINE, 20);
-}
-
-void OpsLogger::sendEventBackend(atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>>) {
-	
 }
 
 // End namespaces

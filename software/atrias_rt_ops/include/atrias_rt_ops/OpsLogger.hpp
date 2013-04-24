@@ -22,8 +22,9 @@ class OpsLogger;
 #include <rtt/types/TemplateTypeInfo.hpp> // For registering typekits
 
 // ATRIAS
-#include <atrias_msgs/rt_ops_event.h> // So we can build and send events
-#include "RTOps.hpp"                  // So we can create ports
+#include <atrias_msgs/rt_ops_event.h>     // So we can build and send events
+#include <atrias_shared/EventManipRT.hpp> // For building events
+#include "RTOps.hpp"                      // So we can create ports
 
 // Our namespaces
 namespace atrias {
@@ -44,27 +45,16 @@ class OpsLogger {
 		  * This is realtime-safe
 		  */
 		template <typename metadata_t>
-		void sendEvent(RtOpsEvent event, metadata_t metadata);
+		void sendEvent(RtOpsEvent event, metadata_t metadata = nullptr);
 
 	private:
 		// Port used to send events
 		RTT::OutputPort<atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>>> eventOut;
-
-		/**
-		  * @brief This is the backend for sending an event.
-		  * @param event The event to be sent
-		  * This should be spawned off in RT Ops's main (non-RT) thread for realtime-safety.
-		  */
-		void sendEventBackend(atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>> event);
 };
 
 template <typename metadata_t>
 void OpsLogger::sendEvent(RtOpsEvent event, metadata_t metadata) {
-	atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>> event_msg;
-	event_msg.event = (RtOpsEvent_t) event;
-	event_msg.metadata.reserve(sizeof(metadata));
-	event_msg.metadata.push_back(10);
-	this->eventOut.write(event_msg);
+	this->eventOut.write(shared::EventManipRT::buildEvent(event, metadata));
 }
 
 // End namespaces
