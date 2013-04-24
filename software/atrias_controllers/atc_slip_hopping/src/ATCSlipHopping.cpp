@@ -4,9 +4,6 @@
   * @brief This implements a SLIP template based vertical hopping controller.
   */
 
-// TODO - Compute leg forces from spring deflection
-// TODO - Use seperate ascLegForce controllers for each leg
-
 #include "atc_slip_hopping/ATCSlipHopping.hpp"
 
 // The namespaces this controller resides in
@@ -18,7 +15,8 @@ ATCSlipHopping::ATCSlipHopping(string name) :
 	ATC(name),
 	ascCommonToolkit(this, "ascCommonToolkit"),
 	ascSlipModel(this, "ascSlipModel"),
-	ascLegForce(this, "ascLegForce"),
+	ascLegForcel(this, "ascLegForcel"),
+	ascLegForcer(this, "ascLegForcer"),
 	ascHipBoomKinematics(this, "ascHipBoomKinematics"),
 	ascPDlA(this, "ascPDlA"),
 	ascPDlB(this, "ascPDlB"),
@@ -44,11 +42,11 @@ void ATCSlipHopping::controller() {
 	 * setShutdownEnabled(true/false) // Enable or disable the shutdown controller
 	 */
 
-    // Startup is handled by the ATC class
-    setStartupEnabled(true);
+	// Startup is handled by the ATC class
+	setStartupEnabled(true);
 
-    // Update current robot state
-    updateState();
+	// Update current robot state
+	updateState();
 
 	// Run hip controller
 	hipControl();
@@ -103,7 +101,6 @@ void ATCSlipHopping::updateState() {
 	springType = guiIn.spring_type;
 	ascSlipModel.r0 = guiIn.slip_leg;
 	h = guiIn.hop_height;
-	rateLim = (10.0)*0.001;
 
 	// Set leg motor position control PD gains
 	ascPDlA.P = ascPDlB.P = ascPDrA.P = ascPDrB.P = guiIn.leg_pos_kp;
@@ -114,18 +111,22 @@ void ATCSlipHopping::updateState() {
 	ascPDlh.D = ascPDrh.D = guiIn.hip_pos_kd;
 
 	// Set leg motor force control PID gains
-	ascLegForce.kp = guiIn.leg_for_kp;
-	ascLegForce.ki = 0.0;
-	ascLegForce.kd = guiIn.leg_for_kd;
+	ascLegForcel.kp = ascLegForcer.kp = guiIn.leg_for_kp;
+	ascLegForcel.ki = ascLegForcer.ki = 0.0;
+	ascLegForcel.kd = ascLegForcer.kd = guiIn.leg_for_kd;
 
-    // Check for stance phase and set hopping state
-    if (rs.position.zPosition < ascSlipModel.r0) {
-    	// Stance phase
-        hoppingState = 0;
-    } else {
-        // Flight phase
-        hoppingState = 1;
-    }
+	// Compute actual leg force from spring deflection
+	tempLegForce = ascLegForcel.compute(rs.lLeg, rs.position);
+	tempLegForce = ascLegForcer.compute(rs.rLeg, rs.position);
+    	
+	// Check for stance phase and set hopping state
+	if (rs.position.zPosition < ascSlipModel.r0) {
+    		// Stance phase
+		hoppingState = 0;
+	} else {
+		// Flight phase
+		hoppingState = 1;
+	}
 
 	// Check hopping type and set stance leg(s)
 	switch (hoppingType) {
@@ -174,14 +175,8 @@ void ATCSlipHopping::standingControl() {
 	rll = rrl = guiIn.standing_leg;
 
 	// Compute motor angles
-	std::tie(qlmA, qlmB) = ascCommonToolkit.legPos2MotorPos(qll, rrl);
-	std::tie(qrmA, qrmB) = ascCommonToolkit.legPos2MotorPos(qll, rrl);
-
-	// Limit motor velocity
-	//qlmA = clamp(qlmA, rs.lLeg.halfA.motorAngle - rateLim, rs.lLeg.halfA.motorAngle + rateLim);
-	//qlmB = clamp(qlmB, rs.lLeg.halfB.motorAngle - rateLim, rs.lLeg.halfB.motorAngle + rateLim);
-	//qrmA = clamp(qrmA, rs.rLeg.halfA.motorAngle - rateLim, rs.rLeg.halfA.motorAngle + rateLim);
-	//qrmB = clamp(qrmB, rs.rLeg.halfB.motorAngle - rateLim, rs.rLeg.halfB.motorAngle + rateLim);
+	std::tie(qlmA, qlmB) = ascCommonToolkit.legPos2MotorPos(qll, rll);
+	std::tie(qrmA, qrmB) = ascCommonToolkit.legPos2MotorPos(qrl, rrl);
 
 	// Compute and set motor currents
 	co.lLeg.motorCurrentA = ascPDlA(qlmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
@@ -224,8 +219,6 @@ void ATCSlipHopping::forceStancePhaseControl() {
 		// If SLIP model says we should be in flight...
 		if (slipState.isFlight) {
 			// Use last know leg position from stance
-			//qlmA = clamp(qlmA, rs.lLeg.halfA.motorAngle - rateLim, rs.lLeg.halfA.motorAngle + rateLim);
-			//qlmB = clamp(qlmB, rs.lLeg.halfB.motorAngle - rateLim, rs.lLeg.halfB.motorAngle + rateLim);
 			co.lLeg.motorCurrentA = ascPDlA(qlmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
 			co.lLeg.motorCurrentB = ascPDlB(qlmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
 
@@ -236,7 +229,8 @@ void ATCSlipHopping::forceStancePhaseControl() {
 			qlmB = rs.lLeg.halfB.legAngle;
 
 			// Compute and set motor currents
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(legForce, rs.lLeg, rs.position);
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForcel.control(legForce, rs.lLeg, rs.position);
+			
 		}
 
 	} else {
@@ -244,8 +238,6 @@ void ATCSlipHopping::forceStancePhaseControl() {
 		std::tie(qlmA, qlmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0*0.85);
 
 		// Compute and set motor currents
-		//qlmA = clamp(qlmA, rs.lLeg.halfA.motorAngle - rateLim, rs.lLeg.halfA.motorAngle + rateLim);
-		//qlmB = clamp(qlmB, rs.lLeg.halfB.motorAngle - rateLim, rs.lLeg.halfB.motorAngle + rateLim);
 		co.lLeg.motorCurrentA = ascPDlA(qlmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
 		co.lLeg.motorCurrentB = ascPDlB(qlmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
 	}
@@ -256,8 +248,6 @@ void ATCSlipHopping::forceStancePhaseControl() {
 		// If SLIP model says we should be in flight...
 		if (slipState.isFlight) {
 			// Use last know leg position from stance
-			//qrmA = clamp(qrmA, rs.rLeg.halfA.motorAngle - rateLim, rs.rLeg.halfA.motorAngle + rateLim);
-			//qrmB = clamp(qrmB, rs.rLeg.halfB.motorAngle - rateLim, rs.rLeg.halfB.motorAngle + rateLim);
 			co.rLeg.motorCurrentA = ascPDrA(qrmA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity);
 			co.rLeg.motorCurrentB = ascPDrB(qrmB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity);
 
@@ -268,7 +258,8 @@ void ATCSlipHopping::forceStancePhaseControl() {
 			qrmB = rs.rLeg.halfB.legAngle;
 
 			// Compute and set motor currents
-			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForce.control(legForce, rs.rLeg, rs.position);
+			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForcer.control(legForce, rs.rLeg, rs.position);
+
 		}
 
 	} else {
@@ -276,8 +267,6 @@ void ATCSlipHopping::forceStancePhaseControl() {
 		std::tie(qrmA, qrmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0*0.85);
 
 		// Compute and set motor currents
-		//qrmA = clamp(qrmA, rs.rLeg.halfA.motorAngle - rateLim, rs.rLeg.halfA.motorAngle + rateLim);
-		//qrmB = clamp(qrmB, rs.rLeg.halfB.motorAngle - rateLim, rs.rLeg.halfB.motorAngle + rateLim);
 		co.rLeg.motorCurrentA = ascPDrA(qrmA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity);
 		co.rLeg.motorCurrentB = ascPDrB(qrmB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity);
 	}
@@ -303,14 +292,8 @@ void ATCSlipHopping::passiveStancePhaseControl() {
 	} else {
 		// Set motor angles
 		std::tie(qrmA, qrmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0*0.85);
-	}
+	}	
 
-	// Limit motor velocity
-	//qlmA = clamp(qlmA, rs.lLeg.halfA.motorAngle - rateLim, rs.lLeg.halfA.motorAngle + rateLim);
-	//qlmB = clamp(qlmB, rs.lLeg.halfB.motorAngle - rateLim, rs.lLeg.halfB.motorAngle + rateLim);
-	//qrmA = clamp(qrmA, rs.rLeg.halfA.motorAngle - rateLim, rs.rLeg.halfA.motorAngle + rateLim);
-	//qrmB = clamp(qrmB, rs.rLeg.halfB.motorAngle - rateLim, rs.rLeg.halfB.motorAngle + rateLim);
-	
 	// Compute and set motor currents
 	co.lLeg.motorCurrentA = ascPDlA(qlmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
 	co.lLeg.motorCurrentB = ascPDlB(qlmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
@@ -354,12 +337,6 @@ void ATCSlipHopping::flightPhaseControl() {
 		// Set upcoming flight leg motor angles
 		std::tie(qrmA, qrmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0*0.85);
 	}
-
-	// Limit motor velocity
-	//qlmA = clamp(qlmA, rs.lLeg.halfA.motorAngle - rateLim, rs.lLeg.halfA.motorAngle + rateLim);
-	//qlmB = clamp(qlmB, rs.lLeg.halfB.motorAngle - rateLim, rs.lLeg.halfB.motorAngle + rateLim);
-	//qrmA = clamp(qrmA, rs.rLeg.halfA.motorAngle - rateLim, rs.rLeg.halfA.motorAngle + rateLim);
-	//qrmB = clamp(qrmB, rs.rLeg.halfB.motorAngle - rateLim, rs.rLeg.halfB.motorAngle + rateLim);
 
 	// Compute and set motor currents
 	co.lLeg.motorCurrentA = ascPDlA(qlmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
