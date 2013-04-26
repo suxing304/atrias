@@ -7,12 +7,8 @@
   * @brief This contains functions for manipulating events and their metadata.
   */
 
-// STL
-#include <memory>                     // For the standard (default) allocator
-
 // ATRIAS
-#include <atrias_msgs/rt_ops_event.h> // For the event message data type
-#include "globals.h"                  // For the RtOpsEvent type
+#include "event.hpp" // For metadata reading/encoding/decoding
 
 // Our namespaces
 namespace atrias {
@@ -22,16 +18,6 @@ template <typename alloc = std::allocator<uint8_t>>
 class EventManip {
 	public:
 		/**
-		  * @brief This builds an event with no metadata.
-		  * @param event The event type
-		  * @return An event of this type
-		  * This is an overload of the more general buildEvent(event, metadata) below,
-		  * specializing in events with no metadata.
-		  */
-		static atrias_msgs::rt_ops_event_<alloc>
-			buildEvent(rtOps::RtOpsEvent event);
-
-		/**
 		  * @brief This assembles an event from the event value and metadata
 		  * @param event The event type
 		  * @param metadata The event metadata
@@ -39,38 +25,35 @@ class EventManip {
 		  */
 		template <class metadata_t>
 			static atrias_msgs::rt_ops_event_<alloc>
-			buildEvent(rtOps::RtOpsEvent event, metadata_t metadata);
+			buildEvent(event::Event event, metadata_t metadata = nullptr);
+
+		/**
+		  * @brief This decodes the metadata from an event
+		  * @param event The event from which to decode the metadata.
+		  * @return A populated instance of the metadata
+		  */
+		template <class metadata_t>
+			static metadata_t readMetadata(atrias_msgs::rt_ops_event_<alloc> &event);
 };
 
 // Template implementations below this line
 
-template<typename alloc>
-atrias_msgs::rt_ops_event_<alloc> EventManip<alloc>::buildEvent(rtOps::RtOpsEvent event) {
-	// The event object that will be returned
-	atrias_msgs::rt_ops_event_<alloc> event_msg;
-
-	// Set event type.
-	event_msg.event = (rtOps::RtOpsEvent_t) event;
-
-	// Ignore metadata (since there is none); return event now
-	return event_msg;
-}
-
 template <class alloc>
 template <class metadata_t>
 atrias_msgs::rt_ops_event_<alloc>
-	EventManip<alloc>::buildEvent(rtOps::RtOpsEvent event, metadata_t metadata)
+	EventManip<alloc>::buildEvent(event::Event event, metadata_t metadata)
 {
+	// Output event message
 	atrias_msgs::rt_ops_event_<alloc> event_msg;
 
 	// Set event type
-	event_msg.event = (rtOps::RtOpsEvent_t) event;
+	event_msg.event = (event::Event_t) event;
 
 	// Resize metadata (this uses the requested allocator).
-	event_msg.metadata.resize(sizeof(metadata));
+	event_msg.metadata.resize(metadataSize(metadata));
 
-	// Stuff metadata -- this is a raw byte-by-byte copy, useful for C-style structs.
-	*((metadata_t*) event_msg.metadata.data()) = metadata;
+	// Stuff metadata
+	encodeMetadata(event_msg.metadata.data(), metadata);
 
 	// Return the message
 	return event_msg;

@@ -44,18 +44,18 @@ class OpsLogger {
 		  * @param metadata The metadata to be sent.
 		  * This is realtime-safe
 		  */
-		template <typename metadata_t>
-		void sendEvent(RtOpsEvent event, metadata_t metadata = nullptr);
+		//template <typename metadata_t>
+		//void sendEvent(RtOpsEvent event, metadata_t metadata = nullptr);
 
 	private:
 		// Port used to send events
 		RTT::OutputPort<atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>>> eventOut;
 };
 
-template <typename metadata_t>
-void OpsLogger::sendEvent(RtOpsEvent event, metadata_t metadata) {
-	this->eventOut.write(shared::EventManipRT::buildEvent(event, metadata));
-}
+//template <typename metadata_t>
+//void OpsLogger::sendEvent(RtOpsEvent event, metadata_t metadata) {
+//	this->eventOut.write(shared::EventManipRT::buildEvent(event, metadata));
+//}
 
 // End namespaces
 }
