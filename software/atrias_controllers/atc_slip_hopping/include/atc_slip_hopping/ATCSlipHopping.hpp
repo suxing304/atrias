@@ -29,6 +29,7 @@
 #include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
 #include <asc_pd/ASCPD.hpp>
+#include <asc_rate_limit/ASCRateLimit.hpp>
 
 // Datatypes
 #include <robot_invariant_defs.h>
@@ -72,22 +73,6 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		void controller();
 
 		/**
-		  * @brief These are sub controllers used by the top level controller.
-		  */
-		ASCCommonToolkit ascCommonToolkit;
-		ASCSlipModel ascSlipModel;
-		ASCLegForce ascLegForcel;
-		ASCLegForce ascLegForcer;
-		ASCHipBoomKinematics ascHipBoomKinematics;
-		ASCPD ascPDlA;
-		ASCPD ascPDlB;
-		ASCPD ascPDrA;
-		ASCPD ascPDrB;
-		ASCPD ascPDlh;
-		ASCPD ascPDrh;
-
-
-		/**
 		  * @brief These are function within the top-level controller.
 		  */
 		void updateState();
@@ -95,22 +80,61 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		int stanceControlType, hoppingType, forceControlType, springType;
 		bool isLeftStance, isRightStance;
 
-		void hipControl();
-		double qlh, qrh;
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void hipController();
+		double qLh, qRh;
 		LeftRight toePosition;
-
-		void standingControl();
-		double qll, rll, qrl, rrl, qlmA, qlmB, qrmA, qrmB;
-		//double rateLim;
-
-		void forceStancePhaseControl();
-		double ql, rl, h;
+		
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void standingController();
+		double qLl, rLl, qRl, rRl, qLmA, qLmB, qRmA, qRmB;
+		double legRateLimit;
+		
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void forceStancePhaseController();
+		double h;
 		SlipState slipState;
-		LegForce legForce, tempLegForce;
-
-		void passiveStancePhaseControl();
-
-		void flightPhaseControl();
+		LegForce legForce, fTemp;
+		
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void passiveStancePhaseController();
+		
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void flightPhaseController();
+		
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void shutdownController();
+		
+		/**
+		  * @brief These are sub controllers used by the top level controller.
+		  */
+  		ASCCommonToolkit ascCommonToolkit;
+		ASCSlipModel ascSlipModel;
+		ASCLegForce ascLegForceLl;
+		ASCLegForce ascLegForceRl;
+		ASCHipBoomKinematics ascHipBoomKinematics;
+		ASCPD ascPDLmA;
+		ASCPD ascPDLmB;
+		ASCPD ascPDRmA;
+		ASCPD ascPDRmB;
+		ASCPD ascPDLh;
+		ASCPD ascPDRh;
+		ASCRateLimit ascRateLimitLmA;
+		ASCRateLimit ascRateLimitLmB;
+		ASCRateLimit ascRateLimitRmA;
+		ASCRateLimit ascRateLimitRmB;
 
 };
 
