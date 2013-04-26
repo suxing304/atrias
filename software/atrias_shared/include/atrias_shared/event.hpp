@@ -60,7 +60,7 @@ size_t metadataSize(metadata_t &metadata) {
   * This should be specialized for more complicated metadata types.
   */
 template <typename alloc, typename metadata_t>
-void encodeMetadata(std::vector<alloc> &storage, metadata_t &metadata) {
+void encodeMetadata(std::vector<uint8_t, alloc> &storage, metadata_t &metadata) {
 	// Resize vector (if necessary) to hold the entire message.
 	size_t necessarySize = metadataSize(metadata);
 	size_t prevSize      = storage.size();
@@ -78,7 +78,7 @@ void encodeMetadata(std::vector<alloc> &storage, metadata_t &metadata) {
   * @return An instance of this metadata type.
   */
 template <typename alloc, typename metadata_t>
-metadata_t decodeMetadata(std::vector<alloc> &storage) {
+metadata_t decodeMetadata(std::vector<uint8_t, alloc> &storage) {
 	// The instance to be read into
 	metadata_t inst;
 
@@ -95,11 +95,11 @@ metadata_t decodeMetadata(std::vector<alloc> &storage) {
 // Overloads for std::nullptr_t metadata (i.e. messages that don't have metadata)
 size_t metadataSize(std::nullptr_t &metadata);
 template <typename alloc>
-void encodeMetadata(std::vector<alloc> &storage, std::nullptr_t &metadata) {
+void encodeMetadata(std::vector<uint8_t, alloc> &storage, std::nullptr_t &metadata) {
 	// This space intentionally left blank
 }
 template <typename alloc>
-std::nullptr_t decodeMetadata(std::vector<alloc> &storage) {
+std::nullptr_t decodeMetadata(std::vector<uint8_t, alloc> &storage) {
 	// Why would anyone call this?
 	return nullptr;
 }

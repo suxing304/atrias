@@ -53,7 +53,7 @@ atrias_msgs::rt_ops_event_<alloc>
 	event_msg.event = (event::Event_t) event;
 
 	// Stuff metadata
-	encodeMetadata(event_msg.metadata, metadata);
+	event::encodeMetadata(event_msg.metadata, metadata);
 
 	// Return the message
 	return event_msg;
