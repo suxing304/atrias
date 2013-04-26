@@ -64,9 +64,9 @@ void encodeMetadata(std::vector<uint8_t, alloc> &storage, metadata_t &metadata) 
 	// Resize vector (if necessary) to hold the entire message.
 	size_t necessarySize = metadataSize(metadata);
 	size_t prevSize      = storage.size();
-	if (storage.capacity() < prevSize + necessarySize) {
-		storage.resize(prevSize + necessarySize);
-	}
+
+	// Grow vector, to make room for the data
+	storage.resize(prevSize + necessarySize);
 
 	// Perform a simple copy (for C-style structs and other basic types)
 	*((metadata_t*) (storage.data() + prevSize)) = metadata;
@@ -131,6 +131,102 @@ enum class SafetyMetadata: uint8_t {
     RIGHT_LEG_TOO_LONG,
     RIGHT_LEG_TOO_SHORT
 };
+
+/**
+  * @brief This is the metadata for the MISSED_DEADLINE event
+  */
+template <typename alloc = std::allocator<char>>
+struct MissedDeadlineMetadata {
+	// The amount of time by which we overshot, in nanoseconds
+	int overshoot;
+
+	// The location where the overshoot happened, as a string
+	std::basic_string<char, std::char_traits<char>, alloc> location;
+};
+
+// Metadata-stuffing functions for string
+// Serialized form of a string:
+//    <variable-length array of characters>
+//    size_t length
+template <typename alloc>
+size_t metadataSize(std::basic_string<char, std::char_traits<char>, alloc> &metadata) {
+	return metadata.length() + sizeof(size_t);
+}
+template <typename alloc>
+void encodeMetadata(std::vector<uint8_t, alloc> &storage, std::basic_string<char, std::char_traits<char>, alloc> &metadata) {
+	// The previous size of the vector
+	size_t prev_size = storage.size();
+
+	// Necessary size to store this metadata
+	size_t data_size = metadataSize(metadata);
+
+	// Reserve space in the vector (may not be necessary, but this is a noop if it's not)
+	storage.reserve(prev_size + data_size);
+
+	// Stuff in the data
+	for (char i : metadata) storage.push_back(i);
+
+	// Stuff in the length
+	size_t str_len = metadata.length();
+	encodeMetadata(storage, str_len);
+}
+template <typename alloc>
+std::basic_string<char, std::char_traits<char>, alloc> decodeMetadata(std::vector<uint8_t, alloc> &storage) {
+	// Retrieve length
+	size_t length = decodeMetadata(storage);
+
+	// The string we'll return
+	std::basic_string<char, std::char_traits<char>, alloc> out;
+
+	// Reserve enough space in the string for performance
+	out.reserve(length);
+
+	// Stuff the data into the string
+	for (int i = length - 1; i >= 0; --i) {
+		out[i] = storage.pop_back();
+	}
+
+	// Return our output string
+	return out;
+}
+
+// Serialized form of MissedDeadline:
+//     int overshoot
+//     <variable-length array of characters for location string>
+//     size_t length of location string
+template <typename alloc>
+size_t metadataSize(MissedDeadlineMetadata<alloc> &metadata) {
+	return sizeof(int) + metadataSize(metadata.location);
+}
+template <typename alloc>
+void encodeMetadata(std::vector<uint8_t, alloc> &storage, MissedDeadlineMetadata<alloc> &metadata) {
+	// The previous size of the vector
+	size_t prev_size = storage.size();
+
+	// Necessary size to store this metadata
+	size_t data_size = metadataSize(metadata);
+
+	// Reserve space in the vector, if necessary
+	if (storage.capacity() < prev_size + data_size) {
+		storage.reserve(prev_size + data_size);
+	}
+
+	// Stuff in the data, piece by piece
+	encodeMetadata(storage, metadata.overshoot);
+	encodeMetadata(storage, metadata.location);
+}
+template <typename alloc>
+MissedDeadlineMetadata<alloc> decodeMetadata(std::vector<uint8_t, alloc> &storage) {
+	// Where we'll store the decoded metadata
+	MissedDeadlineMetadata<alloc> metadata;
+
+	// Decode backwards, piece-by-piece
+	metadata.location  = decodeMetadata(storage);
+	metadata.overshoot = decodeMetadata(storage);
+
+	// Output our decoded metadata
+	return metadata;
+}
 
 // End namespaces
 }
