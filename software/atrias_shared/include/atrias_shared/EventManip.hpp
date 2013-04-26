@@ -7,6 +7,9 @@
   * @brief This contains functions for manipulating events and their metadata.
   */
 
+// STL
+#include <memory>    // For std::allocator
+
 // ATRIAS
 #include "event.hpp" // For metadata reading/encoding/decoding
 
@@ -49,11 +52,8 @@ atrias_msgs::rt_ops_event_<alloc>
 	// Set event type
 	event_msg.event = (event::Event_t) event;
 
-	// Resize metadata (this uses the requested allocator).
-	event_msg.metadata.resize(metadataSize(metadata));
-
 	// Stuff metadata
-	encodeMetadata(event_msg.metadata.data(), metadata);
+	encodeMetadata(event_msg.metadata, metadata);
 
 	// Return the message
 	return event_msg;

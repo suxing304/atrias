@@ -10,7 +10,7 @@
 
 // Standard lib
 #include <cstddef>                    // std::nullptr_t, for template default types
-#include <memory>                     // For the standard allocator
+#include <vector>                     // We encode/decode to/from vectors
 
 // ATRIAS
 #include <atrias_msgs/rt_ops_event.h> // For stuffing/retrieving metadata
@@ -45,7 +45,7 @@ enum class Event: Event_t {
 /**
   * @brief This returns the size of the serialized version of this metadata
   * @param metadata This particular metadata instance
-  * @return The size, if bytes, if the serialized metadata
+  * @return The size, in bytes, if the serialized metadata
   */
 template <typename metadata_t>
 size_t metadataSize(metadata_t &metadata) {
@@ -55,35 +55,54 @@ size_t metadataSize(metadata_t &metadata) {
 
 /**
   * @brief This serializes the metadata into the given location.
-  * @param data A pointer to where the serialization should be placed.
+  * @param storage A vector where the serialization should be placed.
   * @param metadata The metadata
-  * The data is guaranteed to be at least this metadata's size, as per \a metadataSize()
-  * This should be specialized for more complicated metadata type.
+  * This should be specialized for more complicated metadata types.
   */
-template <typename metadata_t>
-void encodeMetadata(uint8_t* data, metadata_t &metadata) {
-	 // Perform a simple copy (for C-style structs and other basic types)
-	 *((metadata_t*) data) = metadata;
+template <typename alloc, typename metadata_t>
+void encodeMetadata(std::vector<alloc> &storage, metadata_t &metadata) {
+	// Resize vector (if necessary) to hold the entire message.
+	size_t necessarySize = metadataSize(metadata);
+	size_t prevSize      = storage.size();
+	if (storage.capacity() < prevSize + necessarySize) {
+		storage.resize(prevSize + necessarySize);
+	}
+
+	// Perform a simple copy (for C-style structs and other basic types)
+	*((metadata_t*) (storage.data() + prevSize)) = metadata;
 }
 
 /**
   * @brief This reads in metadata from the serialized version.
-  * @param data The serialized version of this metadata object
+  * @param storage The serialized version of this metadata object
   * @return An instance of this metadata type.
   */
-template <typename metadata_t>
-metadata_t decodeMetadata(uint8_t* data) {
+template <typename alloc, typename metadata_t>
+metadata_t decodeMetadata(std::vector<alloc> &storage) {
 	// The instance to be read into
 	metadata_t inst;
 
+	// Where this metadata instance starts
+	size_t start = storage.size() - metadataSize(inst);
+
 	// Perform a dumb copy
-	inst = *data;
+	inst = *((metadata_t*) (storage.data() + start));
+
+	// Resize vector, removing the metadata
+	storage.resize(start);
 }
 
 // Overloads for std::nullptr_t metadata (i.e. messages that don't have metadata)
 size_t metadataSize(std::nullptr_t &metadata);
-void encodeMetadata(uint8_t* data, std::nullptr_t &metadata);
-std::nullptr_t decodeMetadata(uint8_t* data);
+template <typename alloc>
+void encodeMetadata(std::vector<alloc> &storage, std::nullptr_t &metadata) {
+	// This space intentionally left blank
+}
+template <typename alloc>
+std::nullptr_t decodeMetadata(std::vector<alloc> &storage) {
+	// Why would anyone call this?
+	return nullptr;
+}
 
 /** @brief The metadata for the SAFETY event.
   * This reflects the _first_ detected reason for a halt.
