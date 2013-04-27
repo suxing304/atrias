@@ -26,7 +26,7 @@ class EventManip {
 		  * @param metadata The event metadata
 		  * @return An event, w/ event and metadata populated
 		  */
-		template <class metadata_t>
+		template <typename metadata_t>
 			static atrias_msgs::rt_ops_event_<alloc>
 			buildEvent(event::Event event, metadata_t metadata = nullptr);
 
@@ -35,14 +35,14 @@ class EventManip {
 		  * @param event The event from which to decode the metadata.
 		  * @return A populated instance of the metadata
 		  */
-		template <class metadata_t>
+		template <typename metadata_t>
 			static metadata_t readMetadata(atrias_msgs::rt_ops_event_<alloc> &event);
 };
 
 // Template implementations below this line
 
-template <class alloc>
-template <class metadata_t>
+template <typename alloc>
+template <typename metadata_t>
 atrias_msgs::rt_ops_event_<alloc>
 	EventManip<alloc>::buildEvent(event::Event event, metadata_t metadata)
 {
@@ -57,6 +57,14 @@ atrias_msgs::rt_ops_event_<alloc>
 
 	// Return the message
 	return event_msg;
+}
+
+template <typename alloc>
+template <typename metadata_t>
+metadata_t EventManip<alloc>::readMetadata(atrias_msgs::rt_ops_event_<alloc> &event) {
+	// Simple passthrough to underlying event code
+	metadata_t out;
+	return event::decodeMetadata(event.metadata, out);
 }
 
 // End namespaces

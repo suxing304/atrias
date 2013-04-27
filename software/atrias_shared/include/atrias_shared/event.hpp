@@ -75,21 +75,22 @@ void encodeMetadata(std::vector<uint8_t, alloc> &storage, metadata_t &metadata) 
 /**
   * @brief This reads in metadata from the serialized version.
   * @param storage The serialized version of this metadata object
+  * @param out     The object into which to place the decoded metadata
   * @return An instance of this metadata type.
   */
 template <typename alloc, typename metadata_t>
-metadata_t decodeMetadata(std::vector<uint8_t, alloc> &storage) {
-	// The instance to be read into
-	metadata_t inst;
-
+metadata_t& decodeMetadata(std::vector<uint8_t, alloc> &storage, metadata_t &out) {
 	// Where this metadata instance starts
-	size_t start = storage.size() - metadataSize(inst);
+	size_t start = storage.size() - metadataSize(out);
 
 	// Perform a dumb copy
-	inst = *((metadata_t*) (storage.data() + start));
+	out = *((metadata_t*) (storage.data() + start));
 
 	// Resize vector, removing the metadata
 	storage.resize(start);
+
+	// Return output
+	return out;
 }
 
 // Overloads for std::nullptr_t metadata (i.e. messages that don't have metadata)
@@ -99,9 +100,10 @@ void encodeMetadata(std::vector<uint8_t, alloc> &storage, std::nullptr_t &metada
 	// This space intentionally left blank
 }
 template <typename alloc>
-std::nullptr_t decodeMetadata(std::vector<uint8_t, alloc> &storage) {
+std::nullptr_t& decodeMetadata(std::vector<uint8_t, alloc> &storage, std::nullptr_t &out) {
 	// Why would anyone call this?
-	return nullptr;
+	out = nullptr;
+	return out;
 }
 
 /** @brief The metadata for the SAFETY event.
@@ -135,25 +137,25 @@ enum class SafetyMetadata: uint8_t {
 /**
   * @brief This is the metadata for the MISSED_DEADLINE event
   */
-template <typename alloc = std::allocator<char>>
+template <typename str_alloc = std::allocator<char>>
 struct MissedDeadlineMetadata {
 	// The amount of time by which we overshot, in nanoseconds
 	int overshoot;
 
 	// The location where the overshoot happened, as a string
-	std::basic_string<char, std::char_traits<char>, alloc> location;
+	std::basic_string<char, std::char_traits<char>, str_alloc> location;
 };
 
 // Metadata-stuffing functions for string
 // Serialized form of a string:
 //    <variable-length array of characters>
 //    size_t length
-template <typename alloc>
-size_t metadataSize(std::basic_string<char, std::char_traits<char>, alloc> &metadata) {
+template <typename str_alloc>
+size_t metadataSize(std::basic_string<char, std::char_traits<char>, str_alloc> &metadata) {
 	return metadata.length() + sizeof(size_t);
 }
-template <typename alloc>
-void encodeMetadata(std::vector<uint8_t, alloc> &storage, std::basic_string<char, std::char_traits<char>, alloc> &metadata) {
+template <typename alloc, typename str_alloc>
+void encodeMetadata(std::vector<uint8_t, alloc> &storage, std::basic_string<char, std::char_traits<char>, str_alloc> &metadata) {
 	// The previous size of the vector
 	size_t prev_size = storage.size();
 
@@ -170,21 +172,27 @@ void encodeMetadata(std::vector<uint8_t, alloc> &storage, std::basic_string<char
 	size_t str_len = metadata.length();
 	encodeMetadata(storage, str_len);
 }
-template <typename alloc>
-std::basic_string<char, std::char_traits<char>, alloc> decodeMetadata(std::vector<uint8_t, alloc> &storage) {
+template <typename alloc, typename str_alloc>
+std::basic_string<char, std::char_traits<char>, str_alloc>&
+	decodeMetadata(std::vector<uint8_t, alloc> &storage, std::basic_string<char, std::char_traits<char>, str_alloc> &out)
+{
 	// Retrieve length
-	size_t length = decodeMetadata(storage);
+	size_t length;
+	decodeMetadata(storage, length);
 
-	// The string we'll return
-	std::basic_string<char, std::char_traits<char>, alloc> out;
+	// Resize string before stuffing data
+	out.resize(length);
 
-	// Reserve enough space in the string for performance
-	out.reserve(length);
+	// Size of vector minus the string data
+	size_t rem_length = storage.size() - length;
 
 	// Stuff the data into the string
-	for (int i = length - 1; i >= 0; --i) {
-		out[i] = storage.pop_back();
+	for (size_t i = 0; i < length; ++i) {
+		out[i] = storage[rem_length + i];
 	}
+
+	// Shrink storage to remove the remainder of the string
+	storage.resize(rem_length);
 
 	// Return our output string
 	return out;
@@ -194,12 +202,12 @@ std::basic_string<char, std::char_traits<char>, alloc> decodeMetadata(std::vecto
 //     int overshoot
 //     <variable-length array of characters for location string>
 //     size_t length of location string
-template <typename alloc>
-size_t metadataSize(MissedDeadlineMetadata<alloc> &metadata) {
+template <typename str_alloc>
+size_t metadataSize(MissedDeadlineMetadata<str_alloc> &metadata) {
 	return sizeof(int) + metadataSize(metadata.location);
 }
-template <typename alloc>
-void encodeMetadata(std::vector<uint8_t, alloc> &storage, MissedDeadlineMetadata<alloc> &metadata) {
+template <typename alloc, typename str_alloc>
+void encodeMetadata(std::vector<uint8_t, alloc> &storage, MissedDeadlineMetadata<str_alloc> &metadata) {
 	// The previous size of the vector
 	size_t prev_size = storage.size();
 
@@ -215,17 +223,14 @@ void encodeMetadata(std::vector<uint8_t, alloc> &storage, MissedDeadlineMetadata
 	encodeMetadata(storage, metadata.overshoot);
 	encodeMetadata(storage, metadata.location);
 }
-template <typename alloc>
-MissedDeadlineMetadata<alloc> decodeMetadata(std::vector<uint8_t, alloc> &storage) {
-	// Where we'll store the decoded metadata
-	MissedDeadlineMetadata<alloc> metadata;
-
+template <typename alloc, typename str_alloc>
+MissedDeadlineMetadata<str_alloc>& decodeMetadata(std::vector<uint8_t, alloc> &storage, MissedDeadlineMetadata<str_alloc> &out) {
 	// Decode backwards, piece-by-piece
-	metadata.location  = decodeMetadata(storage);
-	metadata.overshoot = decodeMetadata(storage);
+	decodeMetadata(storage, out.location);
+	decodeMetadata(storage, out.overshoot);
 
 	// Output our decoded metadata
-	return metadata;
+	return out;
 }
 
 // End namespaces
