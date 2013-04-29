@@ -22,7 +22,6 @@ class RTPrinter;
 #include <rtt/Service.hpp>         // We're a service, so we can expose operations.
 
 // ATRIAS
-#include <atrias_shared/RtCheck.hpp> // We initialize the printing operation callers for this library.
 #include "RTOps.hpp"                 // We need to modify this component.
 
 // Namespaces for this project and the RT Ops component

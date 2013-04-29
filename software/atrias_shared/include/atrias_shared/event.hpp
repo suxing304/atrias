@@ -45,7 +45,7 @@ enum class Event: Event_t {
 /**
   * @brief This returns the size of the serialized version of this metadata
   * @param metadata This particular metadata instance
-  * @return The size, in bytes, if the serialized metadata
+  * @return The size, in bytes, of the serialized metadata
   */
 template <typename metadata_t>
 size_t metadataSize(metadata_t &metadata) {
@@ -58,6 +58,7 @@ size_t metadataSize(metadata_t &metadata) {
   * @param storage A vector where the serialization should be placed.
   * @param metadata The metadata
   * This should be specialized for more complicated metadata types.
+  * Each implementation should append to the end of the vector, resizing it as appropriate
   */
 template <typename alloc, typename metadata_t>
 void encodeMetadata(std::vector<uint8_t, alloc> &storage, metadata_t &metadata) {
@@ -77,6 +78,8 @@ void encodeMetadata(std::vector<uint8_t, alloc> &storage, metadata_t &metadata) 
   * @param storage The serialized version of this metadata object
   * @param out     The object into which to place the decoded metadata
   * @return An instance of this metadata type.
+  * Each implementation of this should shrink the vector, cleaning out its own data.
+  * Decoding happens in the reverse order of encoding.
   */
 template <typename alloc, typename metadata_t>
 metadata_t& decodeMetadata(std::vector<uint8_t, alloc> &storage, metadata_t &out) {

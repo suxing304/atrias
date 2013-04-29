@@ -38,11 +38,6 @@ RTPrinter::RTPrinter(RTOps *rt_ops) :
 	this->printEndBackendCaller    = rt_ops->getOperation("printEndBackend");
 	this->printIntBackendCaller    = rt_ops->getOperation("printIntBackend");
 	this->printStringBackendCaller = rt_ops->getOperation("printStringBackend");
-
-	// Initialize the RtCheck library's OperationCallers.
-	shared::RtCheck::initPrintCallers(this->printEndBackendCaller,
-	                                  this->printIntBackendCaller,
-	                                  this->printStringBackendCaller);
 }
 
 double RTPrinter::printDouble(RTT::LoggerLevel level, double num) {

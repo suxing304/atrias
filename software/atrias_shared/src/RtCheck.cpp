@@ -20,11 +20,12 @@ void RtCheck::check(char* location) {
 		// We've missed a deadline!
 		// If we haven't already detected this missed deadline, print out a warning message.
 		if (!missedDeadline) {
-			stringCaller.send(RTT::Warning, "Deadline missed by ");
-			intCaller.send(RTT::Warning, overshoot);
-			stringCaller.send(RTT::Warning, "ns detected at: ");
-			stringCaller.send(RTT::Warning, location);
-			endCaller.send(RTT::Warning);
+			// Communicate the missed deadline with the rest of the world
+			event::MissedDeadlineMetadata<RTT::os::rt_allocator<char>> metadata;
+			metadata.overshoot = overshoot;
+			metadata.location  = location;
+			auto event = EventManipRT::buildEvent(event::Event::MISSED_DEADLINE, metadata);
+			sendEvent(event);
 			
 			// Record that we've missed a deadline, so we only get one warning in any
 			// given cycle
@@ -33,23 +34,16 @@ void RtCheck::check(char* location) {
 	}
 }
 
-void RtCheck::initPrintCallers(RTT::OperationCaller<void(RTT::LoggerLevel)>&                 endCallerOp,
-                               RTT::OperationCaller<void(RTT::LoggerLevel, int)>&            intCallerOp,
-                               RTT::OperationCaller<void(RTT::LoggerLevel, RTT::rt_string)>& stringCallerOp)
+void RtCheck::initOpCallers(RTT::OperationCaller<void(atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>>&)> &sendEventOp)
 {
 	log(RTT::Info) << "[RtCheck] Initializing OperationCallers." << RTT::endlog();
-
-	endCaller    = endCallerOp;
-	intCaller    = intCallerOp;
-	stringCaller = stringCallerOp;
+	sendEvent = sendEventOp;
 }
 
 // Initialize the static member variables
 RTT::os::TimeService::nsecs RtCheck::deadline       = 0;
 bool                        RtCheck::missedDeadline = false;
-RTT::OperationCaller<void(RTT::LoggerLevel)>                 RtCheck::endCaller;
-RTT::OperationCaller<void(RTT::LoggerLevel, int)>            RtCheck::intCaller;
-RTT::OperationCaller<void(RTT::LoggerLevel, RTT::rt_string)> RtCheck::stringCaller;
+RTT::OperationCaller<void(atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>>&)> RtCheck::sendEvent;
 
 }
 }

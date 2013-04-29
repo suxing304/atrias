@@ -20,15 +20,6 @@ atrias_msgs::controller_output& MainLoop::runSystem(atrias_msgs::robot_state& ro
 	// Update the robot state
 	this->rtOps->getRobotStateHandler().setRobotState(robotState);
 
-	// Debugging awesomeness
-	event::MissedDeadlineMetadata<RTT::os::rt_allocator<char>> metadata;
-	metadata.overshoot = 100;
-	metadata.location = "testing testing.\n";
-	atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>> event =
-		shared::EventManipRT::buildEvent(event::Event::MISSED_DEADLINE, metadata);
-	metadata = shared::EventManipRT::readMetadata<event::MissedDeadlineMetadata<RTT::os::rt_allocator<char>>>(event);
-	this->rtOps->getOpsLogger().sendEvent(event::Event::MISSED_DEADLINE, metadata);
-
 	shared::RtCheck::check((char*) "rtOps::MainLoop end.");
 	return co;
 }

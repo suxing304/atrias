@@ -5,6 +5,7 @@ namespace atrias {
 namespace rtOps {
 
 OpsLogger::OpsLogger(RTOps *rt_ops) :
+	RTT::Service("OpsLogger", rt_ops),
 	eventOut("rt_events")
 {
 	// Add the rt_events port
@@ -28,6 +29,18 @@ OpsLogger::OpsLogger(RTOps *rt_ops) :
 
 	// Set the policy
 	this->eventOut.createStream(policy);
+
+	// Initialize sendEvent operation
+	rt_ops->addOperation("sendEvent", &OpsLogger::sendEventOp, this, RTT::ClientThread)
+		.doc("Use this to send RT Ops Events in realtime.");
+
+	// Initialize RtCheck's event-sending operation caller
+	RTT::OperationCaller<void(atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>>&)> sendEventOpCaller;
+	shared::RtCheck::initOpCallers(sendEventOpCaller = rt_ops->getOperation("sendEvent"));
+}
+
+void OpsLogger::sendEventOp(atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>>& event) {
+	this->eventOut.write(event);
 }
 
 // End namespaces
