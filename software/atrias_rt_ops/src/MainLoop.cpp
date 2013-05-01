@@ -19,7 +19,6 @@ atrias_msgs::controller_output& MainLoop::runSystem(atrias_msgs::robot_state& ro
 
 	// Update the robot state
 	this->rtOps->getRobotStateHandler().setRobotState(robotState);
-	usleep(1000);
 
 	shared::RtCheck::check((char*) "rtOps::MainLoop end.");
 	return co;
