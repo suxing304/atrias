@@ -8,15 +8,16 @@
   */
 
 // Orocos
-#include <rtt/Component.hpp>          // We're a component
-#include <rtt/InputPort.hpp>          // Allows us to receive events from RT Ops
-#include <rtt/OutputPort.hpp>         // Allows us to form ports to the GUI and Controller Manager
-#include <rtt/TaskContext.hpp>        // We're a component aka a TaskContext
-#include <rtt/os/oro_allocator.hpp>   // For receiving HRT events from RT Ops
+#include <rtt/Component.hpp>              // We're a component
+#include <rtt/ConnPolicy.hpp>             // So we can subscribe to and publish to ROS topics
+#include <rtt/InputPort.hpp>              // Allows us to receive events from RT Ops
+#include <rtt/OutputPort.hpp>             // Allows us to form ports to the GUI and Controller Manager
+#include <rtt/TaskContext.hpp>            // We're a component aka a TaskContext
+#include <rtt/os/oro_allocator.hpp>       // For receiving HRT events from RT Ops
 
 // ATRIAS
-#include <atrias_msgs/rt_ops_event.h> // So we can receive and transmit event messages
-#include <atrias_shared/events.h>     // For the event::Event type as well as various metadata types
+#include <atrias_msgs/rt_ops_event.h>     // So we can receive and transmit event messages
+#include <atrias_shared/EventManipRT.hpp> // For the event::Event type as well as various metadata types
 
 namespace atrias {
 
@@ -28,7 +29,7 @@ class EventManager : public RTT::TaskContext {
 		  * @param name This component's name.
 		  */
 		EventManager (std::string const &name);
-
+	
 		/** @brief This forwards an event to the Controller Manager.
 		  * @param event The event to be forwarded.
 		  */
@@ -39,11 +40,14 @@ class EventManager : public RTT::TaskContext {
 		  */
 		void sendGUI(atrias_msgs::rt_ops_event &event);
 
-		/** @brief This is called by Orocos when something (like a new event) needs our attention.
-		  */
-		void updateHook();
-	
 	private:
+		/**
+		  * @brief This converts a RT event message to a non-RT event message
+		  * @param msg The realtime message type
+		  * @return The non-realtime message.
+		  */
+		atrias_msgs::rt_ops_event toNonRtEvent(atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>> &msg);
+	
 		/** @brief This is the event output port to the Controller Manager.
 		  */
 		RTT::OutputPort<atrias_msgs::rt_ops_event> cmOut;
@@ -57,9 +61,8 @@ class EventManager : public RTT::TaskContext {
 		RTT::OutputPort<atrias_msgs::rt_ops_event> guiOut;
 
 		/** @brief This processes a new event.
-		  * @param event The event to be processed.
 		  */
-		void processEvent(atrias_msgs::rt_ops_event &event);
+		void eventInCallback(RTT::base::PortInterface* portInterface);
 };
 
 }

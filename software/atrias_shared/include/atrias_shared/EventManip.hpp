@@ -17,7 +17,7 @@
 namespace atrias {
 namespace shared {
 
-template <typename alloc = std::allocator<uint8_t>>
+template <typename alloc = std::allocator<void>>
 class EventManip {
 	public:
 		/**
