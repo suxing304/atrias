@@ -8,16 +8,15 @@
   */
 
 // Orocos
-#include <rtt/Component.hpp>              // We're a component
-#include <rtt/ConnPolicy.hpp>             // So we can subscribe to and publish to ROS topics
-#include <rtt/InputPort.hpp>              // Allows us to receive events from RT Ops
-#include <rtt/OutputPort.hpp>             // Allows us to form ports to the GUI and Controller Manager
-#include <rtt/TaskContext.hpp>            // We're a component aka a TaskContext
-#include <rtt/os/oro_allocator.hpp>       // For receiving HRT events from RT Ops
+#include <rtt/Component.hpp>            // We're a component
+#include <rtt/ConnPolicy.hpp>           // So we can subscribe to and publish to ROS topics
+#include <rtt/InputPort.hpp>            // Allows us to receive events from RT Ops
+#include <rtt/OutputPort.hpp>           // Allows us to form ports to the GUI and Controller Manager
+#include <rtt/TaskContext.hpp>          // We're a component aka a TaskContext
 
 // ATRIAS
-#include <atrias_msgs/rt_ops_event.h>     // So we can receive and transmit event messages
-#include <atrias_shared/EventManipRT.hpp> // For the event::Event type as well as various metadata types
+#include <atrias_msgs/rt_ops_event.h>   // So we can receive and transmit event messages
+#include <atrias_shared/EventManip.hpp> // For the event::Event type as well as various metadata types
 
 namespace atrias {
 
@@ -41,20 +40,13 @@ class EventManager : public RTT::TaskContext {
 		void sendGUI(atrias_msgs::rt_ops_event &event);
 
 	private:
-		/**
-		  * @brief This converts a RT event message to a non-RT event message
-		  * @param msg The realtime message type
-		  * @return The non-realtime message.
-		  */
-		atrias_msgs::rt_ops_event toNonRtEvent(atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>> &msg);
-	
 		/** @brief This is the event output port to the Controller Manager.
 		  */
 		RTT::OutputPort<atrias_msgs::rt_ops_event> cmOut;
 
 		/** @brief This is how we receive events from RT Ops.
 		  */
-		RTT::InputPort<atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>>> eventsIn;
+		RTT::InputPort<atrias_msgs::rt_ops_event> eventsIn;
 
 		/** @brief This is the output port to the GUI.
 		  */

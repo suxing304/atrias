@@ -33,26 +33,10 @@ void EventManager::sendGUI(atrias_msgs::rt_ops_event &event) {
 	guiOut.write(event);
 }
 
-atrias_msgs::rt_ops_event EventManager::toNonRtEvent(atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>> &msg) {
-	// The message we'll output
-	atrias_msgs::rt_ops_event out;
-
-	// Set event type
-	out.event = msg.event;
-
-	// Copy over metadata
-	out.metadata.reserve(msg.metadata.size());
-	for(auto i: msg.metadata)
-		out.metadata.push_back(i);
-
-	return out;
-}
-
 void EventManager::eventInCallback(RTT::base::PortInterface* portInterface) {
-	// Read the event from the input port, convert to non-rt event
-	atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>> rt_event;
-	this->eventsIn.read(rt_event);
-	auto event = this->toNonRtEvent(rt_event);
+	// Read the event from the input port
+	atrias_msgs::rt_ops_event event;
+	this->eventsIn.read(event);
 
 	switch ((event::Event) event.event) {
 		case event::Event::MISSED_DEADLINE: {
