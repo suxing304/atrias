@@ -62,6 +62,9 @@ class GuiManager {
 
 		// Whether or not a read is necessary
 		bool readNeeded;
+
+		// This is used to send events
+		RTOps* rtOps;
 };
 
 // End namespaces

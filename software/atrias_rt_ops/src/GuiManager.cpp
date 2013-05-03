@@ -5,7 +5,11 @@ namespace atrias {
 namespace rtOps {
 
 GuiManager::GuiManager(RTOps *rt_ops) {
-	rt_ops->addEventPort("guiCmdIn", this->guiCmdIn, boost::bind(&GuiManager::cmdInCallback, this, _1));
+	// Initialize main RTOps pointer.
+	this->rtOps = rt_ops;
+
+	// Add the event port for incoming commands from the GUI
+	this->rtOps->addEventPort("guiCmdIn", this->guiCmdIn, boost::bind(&GuiManager::cmdInCallback, this, _1));
 
 	// Setup local variables
 	this->readNeeded  = false;
@@ -18,6 +22,9 @@ GuiRTOpsCommand GuiManager::getGuiCmd() {
 		// Set readNeeded to false, then do tho read (to prevent a race condition).
 		this->readNeeded = false;
 		if (this->guiCmdIn.read(this->guiCmd) == RTT::NewData) {
+			// Send the acknowledgement event
+			this->rtOps->getOpsLogger().sendEvent(event::Event::ACK_GUI, this->guiCmd.data);
+
 			// Due to race conditions, there may be more data here. Re-check next cycle
 			this->readNeeded = true;
 		}

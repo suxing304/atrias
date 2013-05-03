@@ -39,7 +39,8 @@ enum class Event: Event_t {
     CONTROLLER_ESTOP,         // The controller commanded an estop.
     MEDULLA_ESTOP,            // Sent when any Medulla goes into error mode.
     SAFETY,                   // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata
-    CONTROLLER_CUSTOM         // This one may be sent by controllers -- they fill in their own metadata
+    CONTROLLER_CUSTOM,        // This one may be sent by controllers -- they fill in their own metadata
+    ACK_GUI                   // Acknowledges an event from the GUI. Metadata type: atrias::rtOps::GuiRTOpsCommand
 };
 
 /**
