@@ -96,14 +96,16 @@ metadata_t& decodeMetadata(std::vector<uint8_t, alloc> &storage, metadata_t &out
 	return out;
 }
 
-// Overloads for std::nullptr_t metadata (i.e. messages that don't have metadata)
-size_t metadataSize(std::nullptr_t &metadata);
+// This type is for messages w/out metadata
+struct NoMetadata_t {};
+extern NoMetadata_t NoMetadata; // This is defined in event.cpp
+size_t metadataSize(NoMetadata_t &metadata);
 template <typename alloc>
-void encodeMetadata(std::vector<uint8_t, alloc> &storage, std::nullptr_t &metadata) {
+void encodeMetadata(std::vector<uint8_t, alloc> &storage, NoMetadata_t &metadata) {
 	// This space intentionally left blank
 }
 template <typename alloc>
-std::nullptr_t& decodeMetadata(std::vector<uint8_t, alloc> &storage, std::nullptr_t &out) {
+NoMetadata_t& decodeMetadata(std::vector<uint8_t, alloc> &storage, NoMetadata_t &out) {
 	// Why would anyone call this?
 	out = nullptr;
 	return out;

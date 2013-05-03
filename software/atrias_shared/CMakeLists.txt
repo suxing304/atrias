@@ -31,6 +31,8 @@ include_directories(../../robot_definitions)
 
 rosbuild_add_library(controller_metadata SHARED src/controller_metadata.cpp)
 
+orocos_library(Event src/event.cpp)
+
 # We use C++11 in RtCheck
 add_definitions(-std=c++0x)
 orocos_library(RtCheck src/RtCheck.cpp)
