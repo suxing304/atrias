@@ -22,7 +22,8 @@ class GuiManager;
 #include <std_msgs/Int8.h> // For the command from the GUI to RT Ops
 
 // Orocos
-#include <rtt/InputPort.hpp> // So we can receive commands from the GUI
+#include <rtt/ConnPolicy.hpp> // Allows us to connect to the GUI's ROS stream
+#include <rtt/InputPort.hpp>  // So we can receive commands from the GUI
 
 // ATRIAS
 #include <atrias_shared/globals.h>

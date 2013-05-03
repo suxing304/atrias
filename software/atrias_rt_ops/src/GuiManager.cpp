@@ -11,6 +11,12 @@ GuiManager::GuiManager(RTOps *rt_ops) {
 	// Add the event port for incoming commands from the GUI
 	this->rtOps->addEventPort("guiCmdIn", this->guiCmdIn, boost::bind(&GuiManager::cmdInCallback, this, _1));
 
+	// Connect the input port to the GUI command stream
+	RTT::ConnPolicy policy = RTT::ConnPolicy::buffer(10);
+	policy.transport = 3; // Transport type 3 is ROS
+	policy.name_id = "/gui_rtops_cmd";
+	this->guiCmdIn.createStream(policy);
+
 	// Setup local variables
 	this->readNeeded  = false;
 	this->guiCmd.data = (GuiRTOpsCommand_t) GuiRTOpsCommand::INVALID;

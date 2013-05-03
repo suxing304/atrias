@@ -7,6 +7,7 @@
 	<author>Unknown Author</author>
 	<depend package="rtt" />
 	<depend package="rtt_rosnode" />
+	<depend package="rtt_std_msgs" /> <!-- We send/receive these message types -->
 	<depend package="atrias_shared" />
 	<depend package="atrias_msgs" />
 </package>
