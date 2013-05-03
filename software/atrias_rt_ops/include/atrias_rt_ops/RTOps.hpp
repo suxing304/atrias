@@ -48,6 +48,12 @@ class RTOps : public RTT::TaskContext {
 		~RTOps();
 
 		/**
+		  * @brief Accessor function for the GuiManager instance.
+		  * @return A reference to the main GuiManager instance.
+		  */
+		GuiManager& getGuiManager() const;
+
+		/**
 		  * @brief Accessor function for the OpsLogger instance.
 		  * @return A reference to the main OpsLogger instance.
 		  */

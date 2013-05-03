@@ -16,14 +16,31 @@ void StateMachine::run() {
 	switch (this->state) {
 		case RtOpsState::DISABLED:
 			// If the GUI request is enable and the controller command is enable, enable.
+			if (this->rtOps->getGuiManager().getGuiCmd() == GuiRTOpsCommand::ENABLE /* TODO: Read controller command here */) {
+				this->setState(RtOpsState::ENABLED, event::Event::GUI_STATE_CHG);
+				break;
+			}
+
 			break;
 		case RtOpsState::ENABLED:
 			// Run safeties, transition to eStop
+
 			// Check GUI command == eStop... E_STOP if so
+			if (this->rtOps->getGuiManager().getGuiCmd() == GuiRTOpsCommand::ESTOP) {
+				this->setState(RtOpsState::E_STOP, event::Event::GUI_STATE_CHG);
+				break;
+			}
+
 			// Check controller command == E_STOP... E_STOP if so
 			// Run safeties, transition to Halt if necessary
 			// Check controller command == Halt... Halt if so
+
 			// Check GUI command == Stop... Stop if so
+			if (this->rtOps->getGuiManager().getGuiCmd() == GuiRTOpsCommand::STOP) {
+				this->setState(RtOpsState::STOP, event::Event::GUI_STATE_CHG);
+				break;
+			}
+
 			// Check controller command == stop... Stop if so.
 			break;
 		case RtOpsState::RESET: {
@@ -40,15 +57,32 @@ void StateMachine::run() {
 		}
 		case RtOpsState::E_STOP:
 			// Transition to RESET if the GUI commands a reset
+			if (this->rtOps->getGuiManager().getGuiCmd() == GuiRTOpsCommand::RESET) {
+				this->setState(RtOpsState::RESET, event::Event::GUI_STATE_CHG);
+				break;
+			}
+
 			break;
 		case RtOpsState::HALT:
 			// Run EStop safeties, transition to eStop if necessary
+
 			// Transition to eStop if GUI commands estop
+			if (this->rtOps->getGuiManager().getGuiCmd() == GuiRTOpsCommand::ESTOP) {
+				this->setState(RtOpsState::E_STOP, event::Event::GUI_STATE_CHG);
+				break;
+			}
+
 			// transition to eStop if controller commands estop
 			break;
 		case RtOpsState::STOP: {
 			// Run EStop safeties, go to eStop if necessary
+
 			// Go to eStop if GUI commands estop
+			if (this->rtOps->getGuiManager().getGuiCmd() == GuiRTOpsCommand::ESTOP) {
+				this->setState(RtOpsState::E_STOP, event::Event::GUI_STATE_CHG);
+				break;
+			}
+
 			// Go to eStop if controller commands estop
 			// Run Halt safeties, go to halt if necessary
 			// Go to halt if controller commands halt
@@ -66,11 +100,24 @@ void StateMachine::run() {
 		}
 		default:
 			// Whoa... this should never happen
-			// Send invalid state event here: OpsLogger
+
+			// Send invalid state event
+			this->rtOps->getOpsLogger().sendEvent(event::Event::INVALID_RT_OPS_STATE, this->state);
+
 			// Set state to E_STOP for safety.
-			this->state = RtOpsState::E_STOP;
+			this->setState(RtOpsState::E_STOP, event::Event::INVALID_RT_OPS_STATE);
+
 			break;
 	}
+}
+
+void StateMachine::setState(rtOps::RtOpsState new_state, event::Event event) {
+	// Notify the GUI of the state change
+	event::RTOpsStateChgMetadata metadata;
+	metadata.old_state = this->state;
+	metadata.new_state = new_state;
+	this->rtOps->getOpsLogger().sendEvent(event, metadata);
+	this->state = new_state;
 }
 
 // End namespaces

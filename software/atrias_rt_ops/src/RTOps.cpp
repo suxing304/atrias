@@ -38,6 +38,10 @@ RTOps::~RTOps() {
 	this->stateMachine = nullptr;
 }
 
+GuiManager& RTOps::getGuiManager() const {
+	return *this->guiManager;
+}
+
 OpsLogger& RTOps::getOpsLogger() const {
 	// Return the reference
 	return *this->opsLogger;

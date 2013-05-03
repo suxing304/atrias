@@ -16,6 +16,7 @@ class StateMachine;
 }
 
 // ATRIAS
+#include <atrias_shared/event.hpp> // To notify the GUI of state changes
 #include <atrias_shared/globals.h> // For RtOpsState
 #include "RTOps.hpp"               // So we can access other subsystems
 
@@ -40,6 +41,15 @@ class StateMachine {
 	private:
 		// A pointer to the main RT Ops instance
 		RTOps      *rtOps;
+
+		/**
+		  * @brief This sets a new state, and notifies the GUI that the state has changed.
+		  * @param new_state The new state
+		  * @param event The event type to send.
+		  * This is not thread-safe, and should only be called in the constructor
+		  * or realtime thread.
+		  */
+		void setState(rtOps::RtOpsState new_state, event::Event event);
 
 		// Our state
 		RtOpsState state;

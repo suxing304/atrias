@@ -14,6 +14,7 @@
 
 // ATRIAS
 #include <atrias_msgs/rt_ops_event.h> // For stuffing/retrieving metadata
+#include "globals.h"                  // Some of the metadata types use this
 
 // Our namespaces
 namespace atrias {
@@ -40,7 +41,8 @@ enum class Event: Event_t {
     MEDULLA_ESTOP,            // Sent when any Medulla goes into error mode.
     SAFETY,                   // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata
     CONTROLLER_CUSTOM,        // This one may be sent by controllers -- they fill in their own metadata
-    ACK_GUI                   // Acknowledges an event from the GUI. Metadata type: atrias::rtOps::GuiRTOpsCommand
+    ACK_GUI,                  // Acknowledges an event from the GUI. Metadata type: atrias::rtOps::GuiRTOpsCommand
+    GUI_STATE_CHG             // The GUI has caused RT Ops's state to change. Metadata: atrias::rtOps::RtOpsState
 };
 
 /**
@@ -238,6 +240,14 @@ MissedDeadlineMetadata<str_alloc>& decodeMetadata(std::vector<uint8_t, alloc> &s
 	// Output our decoded metadata
 	return out;
 }
+
+/**
+  * @brief This is the metadata for events RT Ops sends when its state changes
+  */
+struct RTOpsStateChgMetadata {
+	rtOps::RtOpsState old_state;
+	rtOps::RtOpsState new_state;
+};
 
 // End namespaces
 }
