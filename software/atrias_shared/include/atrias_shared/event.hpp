@@ -25,18 +25,18 @@ namespace event {
 typedef uint8_t Event_t;
 
 enum class Event: Event_t {
-    NO_EVENT = 0,             // Only used internally in the controller manager, should never be sent
-    INVALID_CM_COMMAND,       // An invalid command was received from the Controller Manager
+    NO_EVENT = 0,             // Should never be sent, but may be used internally.
+    INVALID_CM_COMMAND,       // An invalid command was received from the Controller Manager (DEPRECATED)
     INVALID_RT_OPS_STATE,     // The internal RT Ops state was somehow bad.
     MISSED_DEADLINE,          // We missed a deadline (timing overshoot). This is just a warning.
-    CM_COMMAND_ESTOP,         // The controller manager sent an EStop command.
-    ACK_NO_CONTROLLER_LOADED, // Acknowledges a NO_CONTROLLER_LOADED command from the CM
-    ACK_DISABLE,              // Acknowledges a DISABLE command from the CM
-    ACK_ENABLE,               // Acknowledges an ENABLE command from the CM
-    ACK_RESET,                // Acknowledges a RESET command from the CM
-    ACK_E_STOP,               // Acknowledges an E_STOP command from the CM
-    ACK_HALT,                 // Acknowledges an E_STOP command from the CM
-    ACK_INVALID,              // This shouldn't ever be sent... it indicates an internal inconsistency in the state machine.
+    CM_COMMAND_ESTOP,         // The controller manager sent an EStop command. (DEPRECATED)
+    ACK_NO_CONTROLLER_LOADED, // Acknowledges a NO_CONTROLLER_LOADED command from the CM (DEPRECATED)
+    ACK_DISABLE,              // Acknowledges a DISABLE command from the CM (DEPRECATED)
+    ACK_ENABLE,               // Acknowledges an ENABLE command from the CM (DEPRECATED)
+    ACK_RESET,                // Acknowledges a RESET command from the CM (DEPRECATED)
+    ACK_E_STOP,               // Acknowledges an E_STOP command from the CM (DEPRECATED)
+    ACK_HALT,                 // Acknowledges an E_STOP command from the CM (DEPRECATED)
+    ACK_INVALID,              // This shouldn't ever be sent... it indicates an internal inconsistency in the state machine. (DEPRECATED)
     CONTROLLER_ESTOP,         // The controller commanded an estop.
     MEDULLA_ESTOP,            // Sent when any Medulla goes into error mode.
     SAFETY,                   // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata

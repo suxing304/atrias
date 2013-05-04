@@ -10,8 +10,8 @@
     <review status="unreviewed" notes="" />
     <url>http://ros.org/wiki/atrias</url>
 
-    <depend package="atrias_controller_manager"/>
-    <depend package="atrias_ecat_conn"/>
+    <!--<depend package="atrias_controller_manager"/> This doesn't build anymore, disabling until rewritten -->
+    <!--<depend package="atrias_ecat_conn"/> This doesn't build anymore, disabling until updated -->
     <depend package="atrias_gui"/>
     <depend package="atrias_msgs"/>
     <depend package="atrias_rt_ops"/>
