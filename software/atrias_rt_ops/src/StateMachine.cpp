@@ -9,7 +9,7 @@ StateMachine::StateMachine(RTOps *rt_ops) {
 	this->rtOps = rt_ops;
 
 	// Initialize state to RESET, so we'll reset the Medullas on startup
-	this->state = RtOpsState::RESET;
+	this->setState(RtOpsState::RESET, event::StateChgOrigin::RTOPS);
 }
 
 void StateMachine::run() {
@@ -17,7 +17,7 @@ void StateMachine::run() {
 		case RtOpsState::DISABLED:
 			// If the GUI request is enable and the controller command is enable, enable.
 			if (this->rtOps->getGuiManager().getGuiCmd() == GuiRTOpsCommand::ENABLE /* TODO: Read controller command here */) {
-				this->setState(RtOpsState::ENABLED, event::Event::GUI_STATE_CHG);
+				this->setState(RtOpsState::ENABLED, event::StateChgOrigin::GUI);
 				break;
 			}
 
@@ -27,7 +27,7 @@ void StateMachine::run() {
 
 			// Check GUI command == eStop... E_STOP if so
 			if (this->rtOps->getGuiManager().getGuiCmd() == GuiRTOpsCommand::ESTOP) {
-				this->setState(RtOpsState::E_STOP, event::Event::GUI_STATE_CHG);
+				this->setState(RtOpsState::E_STOP, event::StateChgOrigin::GUI);
 				break;
 			}
 
@@ -37,7 +37,7 @@ void StateMachine::run() {
 
 			// Check GUI command == Stop... Stop if so
 			if (this->rtOps->getGuiManager().getGuiCmd() == GuiRTOpsCommand::STOP) {
-				this->setState(RtOpsState::STOP, event::Event::GUI_STATE_CHG);
+				this->setState(RtOpsState::STOP, event::StateChgOrigin::GUI);
 				break;
 			}
 
@@ -58,7 +58,7 @@ void StateMachine::run() {
 		case RtOpsState::E_STOP:
 			// Transition to RESET if the GUI commands a reset
 			if (this->rtOps->getGuiManager().getGuiCmd() == GuiRTOpsCommand::RESET) {
-				this->setState(RtOpsState::RESET, event::Event::GUI_STATE_CHG);
+				this->setState(RtOpsState::RESET, event::StateChgOrigin::GUI);
 				break;
 			}
 
@@ -68,7 +68,7 @@ void StateMachine::run() {
 
 			// Transition to eStop if GUI commands estop
 			if (this->rtOps->getGuiManager().getGuiCmd() == GuiRTOpsCommand::ESTOP) {
-				this->setState(RtOpsState::E_STOP, event::Event::GUI_STATE_CHG);
+				this->setState(RtOpsState::E_STOP, event::StateChgOrigin::GUI);
 				break;
 			}
 
@@ -79,7 +79,7 @@ void StateMachine::run() {
 
 			// Go to eStop if GUI commands estop
 			if (this->rtOps->getGuiManager().getGuiCmd() == GuiRTOpsCommand::ESTOP) {
-				this->setState(RtOpsState::E_STOP, event::Event::GUI_STATE_CHG);
+				this->setState(RtOpsState::E_STOP, event::StateChgOrigin::GUI);
 				break;
 			}
 
@@ -101,22 +101,20 @@ void StateMachine::run() {
 		default:
 			// Whoa... this should never happen
 
-			// Send invalid state event
-			this->rtOps->getOpsLogger().sendEvent(event::Event::INVALID_RT_OPS_STATE, this->state);
-
 			// Set state to E_STOP for safety.
-			this->setState(RtOpsState::E_STOP, event::Event::INVALID_RT_OPS_STATE);
+			this->setState(RtOpsState::E_STOP, event::StateChgOrigin::RTOPS);
 
 			break;
 	}
 }
 
-void StateMachine::setState(rtOps::RtOpsState new_state, event::Event event) {
+void StateMachine::setState(rtOps::RtOpsState new_state, event::StateChgOrigin origin) {
 	// Notify the GUI of the state change
-	event::RTOpsStateChgMetadata metadata;
+	event::RtOpsStateChgMetadata metadata;
+	metadata.origin    = origin;
 	metadata.old_state = this->state;
 	metadata.new_state = new_state;
-	this->rtOps->getOpsLogger().sendEvent(event, metadata);
+	this->rtOps->getOpsLogger().sendEvent(event::Event::STATE_CHG, metadata);
 	this->state = new_state;
 }
 

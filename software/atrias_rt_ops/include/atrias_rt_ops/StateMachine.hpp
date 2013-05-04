@@ -45,11 +45,11 @@ class StateMachine {
 		/**
 		  * @brief This sets a new state, and notifies the GUI that the state has changed.
 		  * @param new_state The new state
-		  * @param event The event type to send.
+		  * @param origin The source of the state change
 		  * This is not thread-safe, and should only be called in the constructor
 		  * or realtime thread.
 		  */
-		void setState(rtOps::RtOpsState new_state, event::Event event);
+		void setState(rtOps::RtOpsState new_state, event::StateChgOrigin origin);
 
 		// Our state
 		RtOpsState state;

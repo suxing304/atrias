@@ -26,23 +26,13 @@ typedef uint8_t Event_t;
 
 enum class Event: Event_t {
     NO_EVENT = 0,             // Should never be sent, but may be used internally.
-    INVALID_CM_COMMAND,       // An invalid command was received from the Controller Manager (DEPRECATED)
     INVALID_RT_OPS_STATE,     // The internal RT Ops state was somehow bad.
     MISSED_DEADLINE,          // We missed a deadline (timing overshoot). This is just a warning.
-    CM_COMMAND_ESTOP,         // The controller manager sent an EStop command. (DEPRECATED)
-    ACK_NO_CONTROLLER_LOADED, // Acknowledges a NO_CONTROLLER_LOADED command from the CM (DEPRECATED)
-    ACK_DISABLE,              // Acknowledges a DISABLE command from the CM (DEPRECATED)
-    ACK_ENABLE,               // Acknowledges an ENABLE command from the CM (DEPRECATED)
-    ACK_RESET,                // Acknowledges a RESET command from the CM (DEPRECATED)
-    ACK_E_STOP,               // Acknowledges an E_STOP command from the CM (DEPRECATED)
-    ACK_HALT,                 // Acknowledges an E_STOP command from the CM (DEPRECATED)
-    ACK_INVALID,              // This shouldn't ever be sent... it indicates an internal inconsistency in the state machine. (DEPRECATED)
-    CONTROLLER_ESTOP,         // The controller commanded an estop.
     MEDULLA_ESTOP,            // Sent when any Medulla goes into error mode.
     SAFETY,                   // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata
     CONTROLLER_CUSTOM,        // This one may be sent by controllers -- they fill in their own metadata
     ACK_GUI,                  // Acknowledges an event from the GUI. Metadata type: atrias::rtOps::GuiRTOpsCommand
-    GUI_STATE_CHG             // The GUI has caused RT Ops's state to change. Metadata: atrias::rtOps::RtOpsState
+    STATE_CHG                 // RT Ops's state has changed. Metadata: RtOpsStateChgMetadata
 };
 
 /**
@@ -242,9 +232,20 @@ MissedDeadlineMetadata<str_alloc>& decodeMetadata(std::vector<uint8_t, alloc> &s
 }
 
 /**
+  * @brief This is the origin for an RT Ops state change.
+  * This is used by RtOpsStateChgMetadata below.
+  */
+enum class StateChgOrigin: uint8_t {
+	RTOPS = 0,
+	GUI,
+	CM
+};
+
+/**
   * @brief This is the metadata for events RT Ops sends when its state changes
   */
-struct RTOpsStateChgMetadata {
+struct RtOpsStateChgMetadata {
+	StateChgOrigin    origin;
 	rtOps::RtOpsState old_state;
 	rtOps::RtOpsState new_state;
 };
