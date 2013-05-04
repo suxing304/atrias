@@ -19,8 +19,12 @@ EventManager::EventManager(std::string const &name) :
 	// Connect eventsIn port w/ RTOps's output (through the ROS topic)
 	auto policy = RTT::ConnPolicy::buffer(10);
 	policy.transport = 3; // ROS == 3
-	policy.name_id = "rt_events";
+	policy.name_id = "/rt_events";
 	this->eventsIn.createStream(policy);
+
+	// Connect output port to GUI
+	policy.name_id = "/rt_events_gui";
+	this->guiOut.createStream(policy);
 	
 	return;
 }
