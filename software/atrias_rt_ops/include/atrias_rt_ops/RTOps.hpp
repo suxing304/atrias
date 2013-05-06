@@ -70,6 +70,12 @@ class RTOps : public RTT::TaskContext {
 		  * @return A reference to the main RobotStateHandler instance.
 		  */
 		RobotStateHandler& getRobotStateHandler() const;
+
+		/**
+		  * @brief Accessor function for the main StateMachine instance.
+		  * @return A reference to the main StateMachine instance.
+		  */
+		StateMachine& getStateMachine() const;
 	
 	private:
 		// The GuiManager instance.

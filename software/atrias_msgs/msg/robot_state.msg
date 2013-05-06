@@ -1,7 +1,7 @@
 Header header
 
 # This tells the controller what state RT Ops is in.
-# Type: atrias::rtOps::rtOpsState
+# Type: atrias::rtOps::RtOpsState_t
 uint8 rtOpsState
 
 uint8 robotConfiguration

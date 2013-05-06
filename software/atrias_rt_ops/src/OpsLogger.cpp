@@ -51,7 +51,7 @@ OpsLogger::OpsLogger(RTOps *rt_ops) :
 void OpsLogger::logCycle() {
 	// We use short variable names to minimize verbosity and repetition
 	atrias_msgs::log_data    ld;
-	atrias_msgs::robot_state &rs = this->rtOps->getRobotStateHandler().getRobotState();
+	//atrias_msgs::robot_state &rs = this->rtOps->getRobotStateHandler().getRobotState(); // Commented out for my sanity
 	// Get raw controller output here
 	// Get clamped controller output here.
 

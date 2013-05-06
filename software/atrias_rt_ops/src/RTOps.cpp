@@ -57,6 +57,10 @@ RobotStateHandler& RTOps::getRobotStateHandler() const {
 	return *this->robotStateHandler;
 }
 
+StateMachine& RTOps::getStateMachine() const {
+	return *this->stateMachine;
+}
+
 // Tell Orocos what class to make a component
 ORO_CREATE_COMPONENT(RTOps);
 

@@ -106,6 +106,9 @@ void StateMachine::run() {
 
 			break;
 	}
+
+	// Save state into robot state
+	this->rtOps->getRobotStateHandler().getRobotState().rtOpsState = (RtOpsState_t) this->state;
 }
 
 void StateMachine::setState(rtOps::RtOpsState new_state, event::StateChgOrigin origin) {
