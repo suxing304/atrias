@@ -20,6 +20,16 @@ atrias_msgs::controller_output& MainLoop::runSystem(atrias_msgs::robot_state& ro
 	// Update the robot state
 	this->rtOps->getRobotStateHandler().setRobotState(robotState);
 
+	shared::RtCheck::check((char*) "rtOps::MainLoop::runSystem() post-setRobotState()");
+
+	// Run the state machine
+
+	// Run the controller
+
+	// Call OutputHandler
+
+	// Call logger
+
 	shared::RtCheck::check((char*) "rtOps::MainLoop end.");
 	return co;
 }
