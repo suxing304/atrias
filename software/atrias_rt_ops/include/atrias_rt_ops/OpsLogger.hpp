@@ -23,6 +23,7 @@ class OpsLogger;
 #include <rtt/types/TemplateTypeInfo.hpp> // For registering typekits
 
 // ATRIAS
+#include <atrias_msgs/log_data.h>         // The less resource-intensive log data type
 #include <atrias_msgs/rt_ops_event.h>     // So we can build and send events
 #include <atrias_shared/EventManipRT.hpp> // For building events
 #include <atrias_shared/RtCheck.hpp>      // We initialize RtCheck's event sending operation
@@ -39,6 +40,11 @@ class OpsLogger : public RTT::Service {
 		  * @param rt_ops A pointer to the main RT Ops instance.
 		  */
 		OpsLogger(RTOps *rt_ops);
+
+		/**
+		  * @brief This does the logging for one cycle.
+		  */
+		void logCycle();
 
 		/**
 		  * @brief This sends an event in realtime
@@ -59,6 +65,12 @@ class OpsLogger : public RTT::Service {
 	private:
 		// Port used to send events
 		RTT::OutputPort<atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>>> eventOut;
+
+		// Port used for logging
+		RTT::OutputPort<atrias_msgs::log_data> logOut;
+
+		// Pointer to the main RTOps instance, for accessing the robot state
+		RTOps                                  *rtOps;
 };
 
 template <typename metadata_t>
