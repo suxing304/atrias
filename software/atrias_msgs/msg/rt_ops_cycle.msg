@@ -4,14 +4,11 @@ Header header
 # The robot state from this cycle:
 robot_state       robotState
 
-# The time this cycle began (nanoseconds)
-int64             startTime
-
-# The time this cycle ended (nanoseconds)
-int64             endTime
-
-# The controller-demanded outputs
+# Controller output -- not clamped or zeroed
 controller_output controllerOutput
 
-# The clamped currents and actual output demanded state. (Does not include disabled-zeroing)
+# Controller outputs -- these are clamped, but not disable-zeroed
+controller_output controllerOutputClamped
+
+# Actual commanded output -- like controllerOutputClamped but disable-zeroed
 controller_output commandedOutput

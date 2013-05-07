@@ -45,8 +45,8 @@ void EventManager::eventInCallback(RTT::base::PortInterface* portInterface) {
 	switch ((event::Event) event.event) {
 		case event::Event::MISSED_DEADLINE: {
 			auto metadata = shared::EventManip<>::readMetadata<event::MissedDeadlineMetadata<>>(event);
-			log(RTT::Warning) << "[EventManager] Missed deadline of " << metadata.overshoot
-			                  << "ns at location: " << metadata.location << RTT::endlog();
+			log(RTT::Warning) << "[EventManager] Missed deadline of " << metadata.overshoot / 1000.0
+			                  << "µs at location: " << metadata.location << RTT::endlog();
 			sendGUI(event);
 			break;
 		}

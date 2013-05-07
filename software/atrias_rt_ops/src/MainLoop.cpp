@@ -33,6 +33,7 @@ atrias_msgs::controller_output& MainLoop::runSystem(atrias_msgs::robot_state& ro
 	this->rtOps->getOpsLogger().logCycle();
 
 	// Tell GUIManager to send robot state to gui (GUIManager limits it to 50 Hz)
+	this->rtOps->getGuiManager().txRobotState();
 
 	shared::RtCheck::check((char*) "rtOps::MainLoop end.");
 	return co;

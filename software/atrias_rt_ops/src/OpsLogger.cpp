@@ -55,6 +55,8 @@ void OpsLogger::logCycle() {
 	// Get raw controller output here
 	// Get clamped controller output here.
 
+	shared::RtCheck::check((char*) "rtOps::OpsLogger::logCycle() center.");
+
 	// Pack log data here (copy from OpsLogger::packLogData() in master)
 
 	// Write the actual log data.

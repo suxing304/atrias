@@ -103,8 +103,8 @@ typedef enum {
   */
 #define CONTROLLER_LOOP_OFFSET_NS                                       300000LL
 
-//Loop period for the GUI
-#define GUI_LOOP_PERIOD_NS                                            20000000LL
+// Rate at which info is sent to the GUI from RT Ops and the controllers
+#define GUI_INPUT_PERIOD_NS                                           50000000LL
 
 #define LEG_A_CALIB_LOC                                       1.3089969389957472
 #define LEG_A_MOTOR_MIN_LOC                                         -0.305432619

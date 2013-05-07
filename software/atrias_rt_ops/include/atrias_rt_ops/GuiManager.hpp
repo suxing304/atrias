@@ -22,12 +22,14 @@ class GuiManager;
 #include <std_msgs/Int8.h> // For the command from the GUI to RT Ops
 
 // Orocos
-#include <rtt/ConnPolicy.hpp> // Allows us to connect to the GUI's ROS stream
-#include <rtt/InputPort.hpp>  // So we can receive commands from the GUI
+#include <rtt/ConnPolicy.hpp>     // Allows us to connect to the GUI's ROS stream
+#include <rtt/InputPort.hpp>      // So we can receive commands from the GUI
+#include <rtt/os/TimeService.hpp> // For timing the low frequency output stream
 
 // ATRIAS
-#include <atrias_shared/globals.h>
-#include "RTOps.hpp" // So we can make ports
+#include <atrias_msgs/rt_ops_cycle.h> // For the 50Hz robot state to GUI stream
+#include <atrias_shared/globals.h>    // For the command type from the GUI
+#include "RTOps.hpp"                  // So we can make ports
 
 // Namespaces for RT Ops
 namespace atrias {
@@ -45,13 +47,20 @@ class GuiManager {
 		  * @brief Get the current GUI command
 		  * @return The current GUI command
 		  * This executes a read on a port, if necessary.
+		  * This is realtime-safe;
 		  */
 		GuiRTOpsCommand getGuiCmd();
+
+		/**
+		  * @brief This transmits the robot state to the GUI at 50Hz
+		  * This is realtime-safe.
+		  */
+		void txRobotState();
 
 	private:
 		/**
 		  * @brief This callback is executed whenever a new command is received from the GUI
-		  * This may be run in a non-real-time loop.
+		  * This should be run in a non-real-time loop.
 		  */
 		void cmdInCallback(RTT::base::PortInterface* portInterface);
 
@@ -61,11 +70,17 @@ class GuiManager {
 		// The variable into which the state commands are stored
 		std_msgs::Int8 guiCmd;
 
+		// The last time we've sent out the cycleOut message
+		RTT::os::TimeService::nsecs   lastCyclicOutTime;
+
 		// Whether or not a read is necessary
 		bool readNeeded;
 
 		// This is used to send events
 		RTOps* rtOps;
+
+		// This transmits the robot state to the GUI at 50Hz
+		RTT::OutputPort<atrias_msgs::rt_ops_cycle> cycleOut;
 };
 
 // End namespaces
