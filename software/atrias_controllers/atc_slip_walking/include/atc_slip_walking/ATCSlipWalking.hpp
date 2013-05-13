@@ -40,7 +40,7 @@ using namespace atc_slip_walking;
 namespace atrias {
 namespace controller {
 
-class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, controller_input, controller_status> {
+class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data_, controller_input_, controller_status_> {
     public:
         ATCSlipWalking(string name);
 
@@ -105,7 +105,13 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
         double amp, rFl, rSl;
 
         // SLIP
+        void slipWalkingSetup();
         void slipWalking();
+        void virtualSpringStanceControl(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*);
+        void slipFlightControl(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
+        uint8_t slipControlState;
+        SlipState slipState;
+        LegForce legForce;
 
         // Shutdown
         void shutdownControl();

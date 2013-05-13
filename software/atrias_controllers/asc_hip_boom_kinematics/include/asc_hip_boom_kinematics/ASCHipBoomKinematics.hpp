@@ -20,6 +20,7 @@
 #include <atrias_shared/controller_structs.h>
 #include <atrias_shared/atrias_parameters.h>
 #include <atrias_msgs/robot_state.h>
+#include <robot_invariant_defs.h>
 
 // Cpp
 #include <complex.h>
@@ -73,7 +74,7 @@ class ASCHipBoomKinematics : public AtriasController {
                   * @brief This is our logging port.
                   * You may have as many of these as you'd like of various types.
                   */
-                LogPort<asc_hip_boom_kinematics::controller_log_data> log_out;
+                LogPort<asc_hip_boom_kinematics::controller_log_data_> log_out;
 };
 
 }

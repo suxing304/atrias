@@ -4,8 +4,8 @@
 
 #include <atc_slip_hopping/controller_gui.h>
 
+//! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
-
 	// Get widgets
 	gui->get_widget("slip_spring_spinbutton", slip_spring_spinbutton);
 	gui->get_widget("standing_leg_spinbutton", standing_leg_spinbutton);
@@ -63,19 +63,15 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	sub = nh.subscribe("ATCSlipHopping_status", 0, controllerCallback);
 	pub = nh.advertise<atc_slip_hopping::controller_input>("ATCSlipHopping_input", 0);
 	return true;
-
 }
 
 
 void controllerCallback(const atc_slip_hopping::controller_status &status) {
-
 	controllerDataIn = status;
-
 }
 
-
+//! \brief Get parameters from the server and configure GUI accordingly.
 void getParameters() {
-
 	// Get parameters in the atrias_gui namespace
 	nh.getParam("/atrias_gui/slip_spring", controllerDataOut.slip_spring);
 	nh.getParam("/atrias_gui/standing_leg", controllerDataOut.standing_leg);
@@ -122,7 +118,7 @@ void getParameters() {
 
 }
 
-
+//! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
 	nh.setParam("/atrias_gui/slip_spring", controllerDataOut.slip_spring);
 	nh.setParam("/atrias_gui/standing_leg", controllerDataOut.standing_leg);
@@ -142,10 +138,9 @@ void setParameters() {
     
 }
 
-
+//! \brief Update the GUI.
 void guiUpdate() {
-
-	// Update GUI
+	// Set values in controllerDataOut variable here
 	controllerDataOut.slip_spring = slip_spring_spinbutton->get_value();
 	controllerDataOut.standing_leg = standing_leg_spinbutton->get_value();
 	controllerDataOut.hop_height = hop_height_spinbutton->get_value();
@@ -164,11 +159,8 @@ void guiUpdate() {
 
 	// Publish
 	pub.publish(controllerDataOut);
-
 }
 
-
+//! \brief Take down the GUI.
 void guiTakedown() {
-	// Stuff
 }
-
