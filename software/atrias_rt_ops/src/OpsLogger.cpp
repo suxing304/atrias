@@ -14,12 +14,9 @@ OpsLogger::OpsLogger(RTOps *rt_ops) :
 	rt_ops->addPort("rt_events", this->eventOut);
 	rt_ops->addPort("logOut", this->logOut);
 
-     // Register a typekit for the rt_ops_event w/ the realtime allocator
-	RTT::types::Types()->addType(new RTT::types::TemplateTypeInfo<
-		atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>>,
-		false>("rt_ops_event_"));
-	RTT::types::Types()->type("rt_ops_event_")->addProtocol(3, new ros_integration::RosMsgTransporter<
-		atrias_msgs::rt_ops_event_<RTT::os::rt_allocator<uint8_t>>>());
+	// Register typekits for the events output and log data
+	shared::RtMsgTypekits::registerType<atrias_msgs::rt_ops_event_>("atrias_msgs::rt_ops_event_");
+	shared::RtMsgTypekits::registerType<atrias_msgs::log_data_>("atrias_msgs::log_data_");
 
 	// Connect the events ports to a ROS topic, buffer of 10 events
 	RTT::ConnPolicy policy = RTT::ConnPolicy::buffer(10);
@@ -50,7 +47,7 @@ OpsLogger::OpsLogger(RTOps *rt_ops) :
 
 void OpsLogger::logCycle() {
 	// We use short variable names to minimize verbosity and repetition
-	atrias_msgs::log_data    ld;
+	atrias_msgs::log_data_<shared::RtAlloc> ld;
 	//atrias_msgs::robot_state &rs = this->rtOps->getRobotStateHandler().getRobotState(); // Commented out for my sanity
 	// Get raw controller output here
 	// Get clamped controller output here.
