@@ -3,6 +3,13 @@
 # This script cleans all controllers. This is necessary after a change in the controller library
 # because otherwise they have linking issues that leads to segfaults (particularly on unload)
 
+# Source bashrc, so we can access ROS commands
+# We need to set PS1, or else .bashrc won't do anything
+PS1='$ '
+. ~/.bashrc
+
+roscd atrias/../atrias_controllers/
+
 # Confirm we're in the right directory
 if [ `basename $PWD` != atrias_controllers ]
 then
