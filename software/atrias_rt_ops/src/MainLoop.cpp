@@ -14,7 +14,9 @@ MainLoop::MainLoop(RTOps *rt_ops) :
 		.doc("This operation runs the realtime tasks. It should be called periodically by the connector at 1kHz. This is realtime.");
 }
 
-atrias_msgs::controller_output& MainLoop::runSystem(atrias_msgs::robot_state& robotState) {
+atrias_msgs::controller_output_<shared::RtAlloc>&
+	MainLoop::runSystem(atrias_msgs::robot_state_<shared::RtAlloc>& robotState)
+{
 	shared::RtCheck::check((char*) "rtOps::MainLoop begin.");
 
 	// Update the robot state

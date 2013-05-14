@@ -8,6 +8,9 @@ GuiManager::GuiManager(RTOps *rt_ops) {
 	// Initialize main RTOps pointer.
 	this->rtOps = rt_ops;
 
+	// Register typekit for gui robot state output port.
+	shared::RtMsgTypekits::registerType<atrias_msgs::rt_ops_cycle_>("atrias_msgs::rt_ops_cycle_");
+
 	// Add the event port for incoming commands from the GUI
 	this->rtOps->addEventPort("guiCmdIn", this->guiCmdIn, boost::bind(&GuiManager::cmdInCallback, this, _1));
 	// And the port for sending the robot state
@@ -56,7 +59,7 @@ void GuiManager::txRobotState() {
 		return;
 	
 	// The message we'll actually transmit
-	atrias_msgs::rt_ops_cycle msg;
+	atrias_msgs::rt_ops_cycle_<shared::RtAlloc> msg;
 
 	// Populate the message
 	msg.robotState = rtOps->getRobotStateHandler().getRobotState();

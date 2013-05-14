@@ -45,7 +45,7 @@ void StateMachine::run() {
 			break;
 		case RtOpsState::RESET: {
 			// Transition to Disabled if all medullas are in idle
-			atrias_msgs::robot_state& rs = rtOps->getRobotStateHandler().getRobotState();
+			auto rs = rtOps->getRobotStateHandler().getRobotState();
 			if (rs.medullasInError == 0 &&
 			    rs.medullasInHalt  == 0 &&
 			    rs.medullasInRun   == 0)
@@ -88,7 +88,7 @@ void StateMachine::run() {
 			// Go to halt if controller commands halt
 
 			// Transition to Disabled once all medullas are in idle
-			atrias_msgs::robot_state& rs = rtOps->getRobotStateHandler().getRobotState();
+			auto rs = rtOps->getRobotStateHandler().getRobotState();
 			if (rs.medullasInError == 0 &&
 			    rs.medullasInHalt  == 0 &&
 			    rs.medullasInRun   == 0)

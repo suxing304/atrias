@@ -27,9 +27,11 @@ class GuiManager;
 #include <rtt/os/TimeService.hpp> // For timing the low frequency output stream
 
 // ATRIAS
-#include <atrias_msgs/rt_ops_cycle.h> // For the 50Hz robot state to GUI stream
-#include <atrias_shared/globals.h>    // For the command type from the GUI
-#include "RTOps.hpp"                  // So we can make ports
+#include <atrias_msgs/rt_ops_cycle.h>      // For the 50Hz robot state to GUI stream
+#include <atrias_shared/RtAlloc.hpp>       // For HRT-safe manipulation of events
+#include <atrias_shared/RtMsgTypekits.hpp> // Lets us register the realtime-safe messages
+#include <atrias_shared/globals.h>         // For the command type from the GUI
+#include "RTOps.hpp"                       // So we can make ports
 
 // Namespaces for RT Ops
 namespace atrias {
@@ -80,7 +82,7 @@ class GuiManager {
 		RTOps* rtOps;
 
 		// This transmits the robot state to the GUI at 50Hz
-		RTT::OutputPort<atrias_msgs::rt_ops_cycle> cycleOut;
+		RTT::OutputPort<atrias_msgs::rt_ops_cycle_<shared::RtAlloc>> cycleOut;
 };
 
 // End namespaces

@@ -4,11 +4,11 @@
 namespace atrias {
 namespace rtOps {
 
-atrias_msgs::robot_state& RobotStateHandler::getRobotState() {
+atrias_msgs::robot_state_<shared::RtAlloc>& RobotStateHandler::getRobotState() {
 	return this->robotState;
 }
 
-void RobotStateHandler::setRobotState(atrias_msgs::robot_state& new_state) {
+void RobotStateHandler::setRobotState(atrias_msgs::robot_state_<shared::RtAlloc>& new_state) {
 	this->robotState = new_state;
 }
 

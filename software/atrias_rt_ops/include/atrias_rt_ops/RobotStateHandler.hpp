@@ -17,6 +17,7 @@ class RobotStateHandler;
 
 // ATRIAS
 #include <atrias_msgs/robot_state.h> // We need this a lot in this class
+#include <atrias_shared/RtAlloc.hpp> // For realtime-safe manipulation of ROS msgs
 
 // Namespaces in which this class reside
 namespace atrias {
@@ -28,17 +29,17 @@ class RobotStateHandler {
 		  * @brief This allows access to the robot state.
 		  * @return A reference to the robot state.
 		  */
-		atrias_msgs::robot_state& getRobotState();
+		atrias_msgs::robot_state_<shared::RtAlloc>& getRobotState();
 
 		/**
 		  * @brief This allows the robot state to be updated.
 		  * @param new_state The new robot state.
 		  */
-		void setRobotState(atrias_msgs::robot_state& new_state);
+		void setRobotState(atrias_msgs::robot_state_<shared::RtAlloc>& new_state);
 
 	private:
 		// The robot state
-		atrias_msgs::robot_state robotState;
+		atrias_msgs::robot_state_<shared::RtAlloc> robotState;
 };
 
 // Close namespaces

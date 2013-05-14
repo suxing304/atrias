@@ -20,6 +20,7 @@ class MainLoop;
 // ATRIAS
 #include <atrias_msgs/controller_output.h> // We return the controller output to the connector
 #include <atrias_msgs/robot_state.h>       // We receive the robot state from the connector.
+#include <atrias_shared/RtAlloc.hpp>       // For HRT manipulation of realtime message types.
 #include <atrias_shared/RtCheck.hpp>       // To check for missed deadlines.
 
 // RT Ops
@@ -48,10 +49,11 @@ class MainLoop : public RTT::Service {
 		  * @return Currents and states to command.
 		  * This should be called by connectors at 1kHz.
 		  */
-		atrias_msgs::controller_output& runSystem(atrias_msgs::robot_state& robotState);
+		atrias_msgs::controller_output_<shared::RtAlloc>&
+			runSystem(atrias_msgs::robot_state_<shared::RtAlloc>& robotState);
 
 		// Temporary, for debugging purposes
-		atrias_msgs::controller_output co;
+		atrias_msgs::controller_output_<shared::RtAlloc> co;
 };
 
 // Close the namespaces

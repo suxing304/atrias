@@ -21,16 +21,18 @@
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/unused.h>
 
-// For the medulla state enum
+// For the medulla state enum and GUI_INPUT_PERIOD_NS
 #include <robot_invariant_defs.h>
 // For the maximum and minimum torques, used by the startup controller
 #include <robot_variant_defs.h>
 // And to check RT Ops's state
 #include <atrias_shared/globals.h>
-// For our publishing timer
-#include <atrias_shared/GuiPublishTimer.h>
+// For realtime-safe event sending/generation
+#include <atrias_shared/EventManipRT.hpp>
 // To let us register typekits for the messages
 #include <atrias_shared/RtMsgTypekits.hpp>
+// For realtime-safe message manipulation
+#include <atrias_shared/RtAlloc.hpp>
 
 // We subclass this, so let's include it
 #include "atrias_control_lib/AtriasController.hpp"
@@ -130,7 +132,8 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		  * @param metadata The metadata for this event
 		  * This only allows transmission of CONTROLLER_CUSTOM events
 		  */
-		void sendEvent(rtOps::RtOpsEventMetadata_t metadata = 0);
+		template <typename metadata_t>
+		void sendEvent(metadata_t metadata = nullptr);
 
 	private:
 		/**
@@ -163,8 +166,8 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		  */
 		void guiInCallback(RTT::base::PortInterface* portInterface);
 
-		// This times our publishing to the GUI for is
-		atrias::shared::GuiPublishTimer publishTimer;
+		// The last time we've transmitted to the GUI
+		RTT::os::TimeService::nsecs lastPublishNs;
 
 		/**
 		  * @brief This is the operation called cyclically by RT Ops
@@ -175,7 +178,7 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		atrias_msgs::controller_output& runController(atrias_msgs::robot_state& robotState);
 
 		// This lets us send RT Ops events
-		RTT::OperationCaller<void(rtOps::RtOpsEvent, rtOps::RtOpsEventMetadata_t)> sendEventOp;
+		RTT::OperationCaller<void(atrias_msgs::rt_ops_event_<shared::RtAlloc>&)> sendEventOp;
 
 		/**
 		  * @brief This is the state enum for the startup/shutdown state machine.
@@ -211,7 +214,6 @@ template <template <class> class logType,
 ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	RTT::TaskContext(name),
 	AtriasController(name),
-	publishTimer(50), // The parameter is the transmit period in ms
 	sendEventOp("sendEvent")
 {
 	// We initialize to run mode
@@ -219,6 +221,9 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 
 	// By default, the startup controller is disabled
 	this->startupEnabled = false;
+
+	// This will be fully initialized on the first cycle
+	this->lastPublishNs = 0;
 
 	// Register the operation runController()
 	this->provides("atc")
@@ -347,8 +352,9 @@ RTT::TaskContext& ATC<logType, guiInType, guiOutType>::getTaskContext() const {
 template <template <class> class logType,
           template <class> class guiInType,
           template <class> class guiOutType>
-void ATC<logType, guiInType, guiOutType>::sendEvent(rtOps::RtOpsEventMetadata_t metadata) {
-	this->sendEventOp(rtOps::RtOpsEvent::CONTROLLER_CUSTOM, metadata);
+template <class metadata_t>
+void ATC<logType, guiInType, guiOutType>::sendEvent(metadata_t metadata) {
+	this->sendEventOp(shared::EventManipRT::buildEvent(event::Event::CONTROLLER_CUSTOM, metadata));
 }
 
 template <template <class> class logType,
@@ -396,12 +402,16 @@ atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runControll
 
 	// Transmit the status to the GUI, if it's time.
 	if (notUnused<guiOutType>()) {
-		if (publishTimer.readyToSend()) {
+		auto curTime = RTT::os::TimeService::Instance()->getNSecs();
+		if (curTime >= this->lastPublishNs + GUI_INPUT_PERIOD_NS) {
 			// Set the header (for timestamping)
 			this->guiOut.header = this->getROSHeader();
 
 			// Send the status
 			this->guiOutPort.write(this->guiOut);
+
+			// Update the lastPublishNs value
+			this->lastPublishNs = curTime - (curTime % GUI_INPUT_PERIOD_NS);
 		}
 	}
 

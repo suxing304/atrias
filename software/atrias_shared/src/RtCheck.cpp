@@ -11,7 +11,7 @@ void RtCheck::beginCycle() {
 	missedDeadline = false;
 }
 
-void RtCheck::check(char* location) {
+void RtCheck::check(const char* location) {
 	// This is the amount of time we've overshot by -- negative if we haven't missed a deadline yet.
 	RTT::os::TimeService::nsecs overshoot = RTT::os::TimeService::Instance()->getNSecs() - deadline;
 

@@ -13,6 +13,7 @@
 // ATRIAS
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
+#include <atrias_shared/RtAlloc.hpp>       // For HRT manipulation of ROS msgs.
 #include <atrias_shared/RtCheck.hpp>
 #include <atrias_shared/globals.h>
 #include <robot_invariant_defs.h>
@@ -86,24 +87,24 @@ class CSimConn : public RTT::TaskContext {
 	private:
 		/** @brief This holds the current controller output.
 		  */
-		atrias_msgs::controller_output cOut;
+		atrias_msgs::controller_output_<shared::RtAlloc> cOut;
 
 		/** @brief By calling this, we cycle RT Ops.
 		  * @return The controller output and medulla state to command.
 		  */
-		RTT::OperationCaller<atrias_msgs::controller_output(atrias_msgs::robot_state&)>
+		RTT::OperationCaller<atrias_msgs::controller_output_<shared::RtAlloc>(atrias_msgs::robot_state_<shared::RtAlloc>&)>
 			runSystem;
 
 		/** @brief This stores the current robot state.
 		  */
-		atrias_msgs::robot_state robotState;
+		atrias_msgs::robot_state_<shared::RtAlloc> robotState;
 
 		/** @brief This simulates one hip.
 		  * @param hip      The hip to be simulated.
 		  * @param whichHip Whether this is the left or right hip.
 		  * @return         The new hip state.
 		  */
-		atrias_msgs::robot_state_hip simHip(atrias_msgs::robot_state_hip& hip, Hip whichHip);
+		atrias_msgs::robot_state_hip_<shared::RtAlloc> simHip(atrias_msgs::robot_state_hip_<shared::RtAlloc>& hip, Hip whichHip);
 
 		/** @brief This simulates one leg half.
 		  * @param legHalf The leg half to be simulated.
@@ -111,7 +112,8 @@ class CSimConn : public RTT::TaskContext {
 		  * @param half    The half of the leg this is.
 		  * @return        The new leg half.
 		  */
-		atrias_msgs::robot_state_legHalf simLegHalf(atrias_msgs::robot_state_legHalf& legHalf, double current, Half half);
+		atrias_msgs::robot_state_legHalf_<shared::RtAlloc>
+			simLegHalf(atrias_msgs::robot_state_legHalf_<shared::RtAlloc>& legHalf, double current, Half half);
 };
 
 }

@@ -24,7 +24,7 @@ CSimConn::CSimConn(std::string name) :
 	.75 * M_PI;
 }
 
-atrias_msgs::robot_state_hip CSimConn::simHip(atrias_msgs::robot_state_hip& hip, Hip whichHip) {
+atrias_msgs::robot_state_hip_<shared::RtAlloc> CSimConn::simHip(atrias_msgs::robot_state_hip_<shared::RtAlloc>& hip, Hip whichHip) {
 	// This represents a net force... it's just in amps, because that's how we know our holding force.
 	double netAmps = ((whichHip == Hip::LEFT) ? cOut.lLeg.motorCurrentHip : cOut.rLeg.motorCurrentHip) +
 	                 ((whichHip == Hip::LEFT) ? -HIP_HOLD_TORQUE          : HIP_HOLD_TORQUE);
@@ -47,13 +47,17 @@ atrias_msgs::robot_state_hip CSimConn::simHip(atrias_msgs::robot_state_hip& hip,
 	else if (oldPos > maxPos && newVel > 0.0)
 		newVel = 0.0;
 	
-	atrias_msgs::robot_state_hip out;
+	atrias_msgs::robot_state_hip_<shared::RtAlloc> out;
 	out.legBodyVelocity = newVel;
 	out.legBodyAngle    = oldPos + .001 * newVel;
 	return out;
 }
 
-atrias_msgs::robot_state_legHalf CSimConn::simLegHalf(atrias_msgs::robot_state_legHalf& legHalf, double current, Half half) {
+atrias_msgs::robot_state_legHalf_<shared::RtAlloc>
+	CSimConn::simLegHalf(atrias_msgs::robot_state_legHalf_<shared::RtAlloc>& legHalf,
+	                     double current,
+	                     Half   half)
+{
 	// Acceleration.
 	double accel = ACCEL_PER_AMP * current;
 
@@ -82,7 +86,7 @@ atrias_msgs::robot_state_legHalf CSimConn::simLegHalf(atrias_msgs::robot_state_l
 	// Compute new position.
 	pos += .001 * newVel;
 	
-	atrias_msgs::robot_state_legHalf out;
+	atrias_msgs::robot_state_legHalf_<shared::RtAlloc> out;
 	out.rotorAngle    = out.motorAngle    = out.legAngle    = pos;
 	out.rotorVelocity = out.motorVelocity = out.legVelocity = newVel;
 	return out;

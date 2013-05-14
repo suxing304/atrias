@@ -38,7 +38,7 @@ class RtCheck {
 		  * This is a C string and not a standard string to prevent an allocation
 		  * when creating the string.
 		  */
-		static void check(char* location);
+		static void check(const char* location);
 
 		/**
 		  * @brief This initializes the operation caller used for event sending
