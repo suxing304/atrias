@@ -3,8 +3,7 @@
 # This script cleans all controllers. This is necessary after a change in the controller library
 # because otherwise they have linking issues that leads to segfaults (particularly on unload)
 
-# Source bashrc, so we can access ROS commands
-# We need to set PS1, or else .bashrc won't do anything
+# Source bashrc so we can run ROS commands. Note: The PS1 setting is a hack to make bashrc actually run
 PS1='$ '
 . ~/.bashrc
 
