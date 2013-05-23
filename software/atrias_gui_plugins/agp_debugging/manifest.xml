@@ -1,0 +1,20 @@
+<package>
+  <description brief="atrias_gui_debugging">
+
+     atrias_gui_debugging
+
+  </description>
+  <author>Michael</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atrias_gui_debugging</url>
+  <depend package="qt_gui_py_common"/>
+  <depend package="rosgraph"/>
+  <depend package="rostopic"/>
+  <depend package="rqt_gui"/>
+  <depend package="rqt_gui_py"/>
+  <depend package="rqt_py_common"/>
+
+</package>
+
+

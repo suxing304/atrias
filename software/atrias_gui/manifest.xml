@@ -1,0 +1,19 @@
+<package>
+  <description brief="atrias_gui">
+
+     atrias_gui
+
+  </description>
+  <author>Michael</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atrias_gui</url>
+  <depend package="qt_gui"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+  <depend package="rqt_gui"/>
+  <depend package="rqt_gui_cpp"/>
+  <depend package="rqt_gui_py"/>
+</package>
+
+
