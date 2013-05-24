@@ -8,12 +8,14 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/atrias_gui_controller_interface</url>
-  <depend package="qt_gui_py_common"/>
+  <depend package="qt_gui_cpp"/>
   <depend package="rosgraph"/>
   <depend package="rostopic"/>
   <depend package="rqt_gui"/>
-  <depend package="rqt_gui_py"/>
-  <depend package="rqt_py_common"/>
+
+  <export>
+    <rqt_gui plugin="${prefix}/plugin.xml"/>
+  </export>
 
 </package>
 

@@ -1,0 +1,8 @@
+<stack>
+  <description brief="atrias_gui_plugins">Plugins for ATRIAS's rqt-based GUI</description>
+  <author>Michael Anderson</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atrias_controllers</url>
+  <depend stack="ros" />
+</stack>

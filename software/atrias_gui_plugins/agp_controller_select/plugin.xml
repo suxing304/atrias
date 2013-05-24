@@ -1,0 +1,12 @@
+<library path="src">
+  <class name="Plugin" type="agp_controller_select.plugin.Plugin" base_class_type="rqt_gui_cpp::Plugin">
+    <description>
+      Shows a list of loadable ATRIAS controllers to the user.
+    </description>
+    <qtgui>
+      <label>ATRIAS Controllers</label>
+      <icon type="theme">system-help</icon>
+      <statustip>Shows a list of loadable ATRIAS controllers</statustip>
+    </qtgui>
+  </class>
+</library>

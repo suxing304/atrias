@@ -3,10 +3,9 @@
 import os
 import sys
 
-from python_qt_binding.QtGui import QAction, QIcon, QMenu
-from qt_gui.menu_manager import MenuManager
 from qt_gui.plugin_menu import PluginMenu
 from qt_gui.main_window import MainWindow
+from python_qt_binding.QtGui import QAction
 
 disabled_plugins = [
         "rqt_web/Web",
@@ -36,7 +35,9 @@ def add_plugin_impostor(current_function):
     return new_func
 
 def add_plugin_additions(self, plugin_descriptor):
-    if plugin_descriptor.plugin_id() in disabled_plugins:
+    if plugin_descriptor.plugin_id().startswith('agp_'):
+        self.add_plugin_suffix(plugin_descriptor)
+    elif plugin_descriptor.plugin_id() in disabled_plugins:
         return False
     #print plugin_descriptor.plugin_id()
 
@@ -51,6 +52,14 @@ def perspective_changed_impostor(current_function):
 
 def perspective_changed_additions(self, name):
     self.setWindowTitle('%s - ATRIAS Control Interface 3.0' % str(name))
+
+def add_plugin_suffix(self, plugin_descriptor):
+    action_attributes = plugin_descriptor.action_attributes()
+    action = QAction(action_attributes['label'], self._plugin_menu_manager.menu)
+    self._enrich_action(action, action_attributes)
+    self._plugin_mapper.setMapping(action, plugin_descriptor.plugin_id())
+    action.triggered.connect(self._plugin_mapper.map)
+    self._plugin_menu_manager.add_suffix(action)
 
 def magic(sfile):    
     try:
@@ -68,7 +77,8 @@ def magic(sfile):
     """
     PluginMenu.add_plugin = add_plugin_impostor(PluginMenu.add_plugin)
     MainWindow.perspective_changed = perspective_changed_impostor(MainWindow.perspective_changed)
-    #from atrias_gui.main import Main
+    setattr(PluginMenu, "add_plugin_suffix", add_plugin_suffix)
+    
     from rqt_gui.main import Main
     main = Main(os.path.abspath(sfile))
     return main.main()
