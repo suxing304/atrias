@@ -31,3 +31,4 @@ if __name__ == "__main__":
     sub = rospy.Subscriber("atrias_log_request", log_request, logRequestCallback, queue_size=10)
     rospy.spin()
 
+# vim: expandtab:sts=4

@@ -10,13 +10,15 @@ OUTPUT = medulla
 OUTPUT_DIR = .
 
 # Source Files
-SOURCES = medulla.c medulla_leg.c medulla_hip.c medulla_boom.c amplifier.c
+SOURCES = medulla.c medulla_leg.c medulla_hip.c medulla_boom.c medulla_imu.c amplifier.c
 SRCDIR = src
 
 # Medulla_lib stuff
 MEDULLA_LIB_DIR = ../../../medulla/firmware/medulla_lib
 #DEBUG_LEVEL = -DDEBUG_LOW
-#DEBUG_LEVEL = -DDEBUG_HIGH
+DEBUG_LEVEL = -DDEBUG_HIGH
+ENABLE_ECAT = -DENABLE_ECAT
+ENABLE_IMU = -DENABLE_IMU
 
 # Build Options
 OBJDIR = build
@@ -30,6 +32,8 @@ PORT = usb
 # Create the compiler flags
 CFLAGS  = -DF_CPU=$(F_CPU)UL
 CFLAGS += $(DEBUG_LEVEL)
+CFLAGS += $(ENABLE_ECAT)
+CFLAGS += $(ENABLE_IMU)
 CFLAGS += -O$(OPT)
 CFLAGS += -fshort-enums
 CFLAGS += -Wall
@@ -38,6 +42,11 @@ CFLAGS += $(patsubst %,-I%,$(INCLUDE_DIRS))
 CFLAGS += -mmcu=$(MCU)
 CFLAGS += -std=gnu99
 CFLAGS += -lm
+
+# avr-libc version > 1.7.0?
+ifeq "$(shell expr `gcc -dumpversion` \> 1.7.0)" "1"
+	CFLAGS += -D__DELAY_BACKWARD_COMPATIBLE__
+endif
 
 # Define all object files
 OBJS = $(patsubst %.c,$(OBJDIR)/%.o,$(SOURCES))

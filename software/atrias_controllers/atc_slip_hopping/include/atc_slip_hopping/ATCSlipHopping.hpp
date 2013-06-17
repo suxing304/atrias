@@ -1,11 +1,12 @@
-#ifndef ATC_SLIP_HOPPING_HPP
-#define ATC_SLIP_HOPPING_HPP
+#ifndef ATCSlipHopping_HPP
+#define ATCSlipHopping_HPP
 
 /**
-  * @file ATC_SLIP_HOPPING.hpp
-  * @author Mikhail Jones
-  * @brief This implements a SLIP based template controller.
-  */
+ * @file ATC_SLIP_HOPPING.hpp
+ * @author Mikhail S. Jones
+ * @brief This hopping controller is based on a Spring Loaded Inverted 
+ * Pendulum (SLIP) template model.
+ */
 
 // Include the ATC class
 #include <atrias_control_lib/ATC.hpp>
@@ -18,9 +19,10 @@
 
 // Our subcontroller types
 #include <asc_common_toolkit/ASCCommonToolkit.hpp>
-#include <asc_slip_model/ASCSlipModel.hpp>
-#include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
+#include <asc_slip_model/ASCSlipModel.hpp>
+#include <asc_interpolation/ASCInterpolation.hpp>
+#include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_pd/ASCPD.hpp>
 #include <asc_rate_limit/ASCRateLimit.hpp>
 
@@ -32,28 +34,20 @@
 
 // Namespaces we're using
 using namespace std;
-using namespace atc_slip_hopping;
 
 // Our namespaces
 namespace atrias {
 namespace controller {
 
-/* Our class definition. We subclass ATC for a top-level controller.
- * If we don't need a data type (such as the controller-to-gui message),
- * we simply leave that spot in the template blank. The following example
- * shows the necessary definition if this controller were not to transmit
- * data to the GUI:
- *     class ATC : public ATC<log_data, gui_to_controller,>
- *
- * Here, we don't need any log data, but we do communicate both ways w/ the GUI
- */
-class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data_, controller_input_, controller_status_> {
+class ATCSlipHopping : public ATC<
+	atc_slip_hopping::controller_log_data_,
+	atc_slip_hopping::controller_input_,
+	atc_slip_hopping::controller_status_> 
+{
 	public:
 		/**
 		  * @brief The constructor for this controller.
 		  * @param name The name of this component.
-		  * Every top-level controller will have this name parameter,
-		  * just like current controllers.
 		  */
 		ATCSlipHopping(string name);
 
@@ -64,117 +58,75 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data_, contro
 		  * if they are not disabled.
 		  */
 		void controller();
-
+		
 		/**
-		  * @brief Gets values from GUI and updates all relavent states.
+		  * @brief These are functions for the top-level controller.
 		  */
-		void updateState();
-
-		/**
-		  * @brief A kinematically driven hip controller to limit knee forces.
-		  */
+		void updateController();
+		void updateGui();
+		void updateSlipConditions();
+		void updateSlipForces();
 		void hipController();
-		
-		/**
-		  * @brief A simple two leg standing controller that uses a position 
-		  * controller to hold a constant virtual motor leg length.
-		  */
 		void standingController();
-		
-		/**
-		  * @brief A SLIP based force tracking stance phase controller.
-		  */
-		void slipForceStancePhaseController();
-		
-		/**
-		  * @brief A simple stance phase controller allowing only leg length 
-		  * forces with zero leg angle torques. Uses a position controller to 
-		  * keep virtual motor leg length constant while minimizing spring 
-		  * about the hip.
-		  */
-		void passiveStancePhaseController();
-
-		/**
-		  * @brief A simple stance phase controller simulating a virtual spring
-		  * between the hip and toe. Uses a force controller to then track these 
-		  * forces that are based on leg deflection.
-		  */
-		void virtualSpringStancePhaseController();
-		
-		/**
-		  * @brief A simple constant leg position flight phase controller.
-		  */
-		void flightPhaseController();
-		
-		/**
-		  * @brief Applies virtual dampers to all motors.
-		  */
+		void slipForceStanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*, ASCLegForce*);
+		void passiveStanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
+		void virtualSpringStanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*);
+		void stanceEvents();
+		void ballisticFlightLegController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*, ASCRateLimit*, ASCRateLimit*);
+		void ballisticStanceLegController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*, ASCRateLimit*, ASCRateLimit*);
+		void ballisticEvents();
 		void shutdownController();
 		
 		/**
 		  * @brief These are sub controllers used by the top level controller.
 		  */
 		ASCCommonToolkit ascCommonToolkit;
-		ASCSlipModel ascSlipModel;
-		ASCLegForce ascLegForceLl;
-		ASCLegForce ascLegForceRl;
 		ASCHipBoomKinematics ascHipBoomKinematics;
-		ASCPD ascPDLmA;
-		ASCPD ascPDLmB;
-		ASCPD ascPDRmA;
-		ASCPD ascPDRmB;
-		ASCPD ascPDLh;
-		ASCPD ascPDRh;
-		ASCRateLimit ascRateLimitLmA;
-		ASCRateLimit ascRateLimitLmB;
-		ASCRateLimit ascRateLimitRmA;
-		ASCRateLimit ascRateLimitRmB;
+		ASCInterpolation ascInterpolation;
+		ASCSlipModel ascSlipModel;
+		ASCLegForce ascLegForceL, ascLegForceR;
+		ASCPD ascPDLmA, ascPDLmB, ascPDRmA, ascPDRmB, ascPDLh, ascPDRh;
+		ASCRateLimit ascRateLimitLmA, ascRateLimitLmB, ascRateLimitRmA, ascRateLimitRmB, ascRateLimitLh, ascRateLimitRh;
+
+		// Motor and leg variables
+		double rSl, drSl, qSl, dqSl; // Stance leg states
+		double rFl, drFl, qFl, dqFl; // Flight leg states
+		double qSmA, dqSmA, qSmB, dqSmB; // Stance motor states
+		double qFmA, dqFmA, qFmB, dqFmB; // Flight motor states
+		LegForce forceS, forceF;
 		
-		// State machine references
-		int controllerState, hoppingState;
-		
+		// Motor and leg variables
+		double rLl, drLl, qLl, dqLl; // Left leg states
+		double rRl, drRl, qRl, dqRl; // Right leg states
+		double qLmA, dqLmA, qLmB, dqLmB; // Left motor states
+		double qRmA, dqRmA, qRmB, dqRmB; // Right motor states
+		LegForce forceL, forceR;
+
+		// State transistion events
+		bool isLeftLegTO, isLeftLegTD, isRightLegTO, isRightLegTD;
+		double forceThresholdTO, forceThresholdTD, positionThresholdTD;
+
+		// Hip controller
+		double qLh, qRh; // Hip angles
+		LeftRight toePosition; // Desired toe positions measures from boom center axis
+				
 		// Controller options and parameters
+		int controllerState, hoppingState; // State machine references
+		double legRateLimit, hipRateLimit; // Velocity limit for motors (used in standing controller only)
 		int stanceControlType, hoppingType, forceControlType, springType;
 		
-		// Defines which legs are used in stance
-		bool isLeftStance, isRightStance;
-		
-		// Hip angles
-		double qLh, qRh;
-		
-		// Desired toe positions for hip boom kinematic controller
-		LeftRight toePosition;
-		
-		// Leg angles and lengths	
-		double qLl, rLl, qRl, rRl;
-		
-		// Leg velocities
-		double dqLl, drLl, dqRl, drRl;
-		
-		// Motor angles and velocities
-		double qLmA, qLmB, qRmA, qRmB;
-		
-		// Velocity limit for motors (used in standing controller only)
-		double legRateLimit;
-		
 		// Desired hop height for terrain following SLIP force controller
-		double h;
+		double hopHeight;
 		
 		// SLIP model state structure
 		SlipState slipState;
 		
-		// Leg force structures
-		LegForce legForce;
-		
 		// Simulated virtual spring between robot
 		double k, dk;
-		double qF, rF;
 
 };
 
 }
 }
 
-#endif // ATC_SLIP_HOPPING_HPP
-
-// vim: noexpandtab
+#endif // ATCSlipHopping_HPP
