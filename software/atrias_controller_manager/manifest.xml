@@ -1,9 +1,7 @@
 <package>
 	<description brief="AtriasControllerManager">
-
 		AtriasControllerManager
-
-  </description>
+	</description>
 	<author>drl</author>
 	<license>BSD</license>
 	<review status="unreviewed" notes="" />
@@ -14,4 +12,4 @@
 	<depend package="atrias_msgs" />
 </package>
 
-
+<!-- vim: set noexpandtab: -->
