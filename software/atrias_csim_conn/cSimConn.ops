@@ -1,8 +1,10 @@
+import("atrias_controller_manager")
 import("atrias_rt_ops")
 import("atrias_event_manager")
 import("atrias_csim_conn")
 
 # Load necessary components.
+loadComponent("atrias_cm", "ControllerManager")
 loadComponent("atrias_rt", "RTOps")
 loadComponent("atrias_event_manager", "EventManager")
 loadComponent("atrias_connector", "CSimConn")
@@ -12,14 +14,16 @@ addPeer("atrias_event_manager", "atrias_rt")
 addPeer("atrias_connector", "atrias_rt")
 
 # Make the CSim Connector cyclic
-setActivity("atrias_connector", 0.001, 80, ORO_SCHED_RT)
+setActivity("atrias_connector", 0.001, 99, ORO_SCHED_RT)
 
 # Configure components.
+atrias_cm.configure()
 atrias_rt.configure()
 atrias_event_manager.configure()
 atrias_connector.configure()
 
 # Start components.
-atrias_rt.start();
-atrias_event_manager.start();
-atrias_connector.start();
+atrias_cm.start()
+atrias_rt.start()
+atrias_event_manager.start()
+atrias_connector.start()
