@@ -20,6 +20,7 @@ class RTHandler;
 
 // Standard libs
 #include <sys/mman.h> // For memlocking
+#include <cstdlib>    // For system() -- temporarily in use for changing thread priorities
 #include <cstring>    // memset, for prefaulting the stack
 #include <fstream>    // Lets us write /dev/cpu_dma_latency and set the CPU governors
 

@@ -17,6 +17,11 @@ RTHandler::RTHandler() {
 	// priorities is a good idea. It may not be...
 	// Additionally, we should expose an operation allowing connectors
 	// (specifically, EtherCAT connectors) to up the priority of relevant threads.
+	// I envision a "whitelist" of threads with associated priorities, that includes
+	// our realtime thread and the EtherCAT device's IRQ.
+	// For now, we'll just do this:
+	if (system("chrt -a -p 97 `pidof rtkit-daemon`"))
+		log(RTT::Warning) << "Could not adjust priority of rtkit-daemon!" << RTT::endlog();
 
 	// Set processor governors to performance, so they don't change P states while we're
 	// trying to be realtime
