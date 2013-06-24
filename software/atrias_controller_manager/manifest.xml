@@ -6,6 +6,7 @@
 	<license>BSD</license>
 	<review status="unreviewed" notes="" />
 	<url>http://ros.org/wiki/AtriasControllerManager</url>
+	<rosdep name="tinyxml"/> <!-- We use TinyXML to read component names out of controllers -->
 	<depend package="rtt" />
 	<depend package="roslib" />
 	<depend package="atrias_shared" />

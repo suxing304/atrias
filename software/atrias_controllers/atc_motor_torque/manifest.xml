@@ -10,6 +10,9 @@
 	<depend package="atrias_control_lib"/>
 	<depend package="atrias_shared"/>
 	<depend package="atrias_msgs"/>
+	<export>
+		<controller>ATCMotorTorque</controller>
+	</export>
 </package>
 
 <!-- vim: set noexpandtab: -->
