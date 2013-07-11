@@ -49,6 +49,15 @@ int main(void) {
 		PORTC.DIRSET = 1;
 		PORTC.OUTSET = 1;
 	}
+	if(cpu_configure_rtc(1) ) {
+		// Set up DFLL on 32Mhz clock, using the interal RTC
+		// OSC.DFLLCTRL is correct by default
+		DFLLRC32M.CTRL = 1;
+	}
+	else {
+		PORTC.DIRSET = 1;
+		PORTC.OUTSET = 1;
+	}
 
 	// Configure and enable all the interrupts
 	cpu_configure_interrupt_level(cpu_interrupt_level_medium, true);
