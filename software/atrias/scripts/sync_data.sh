@@ -4,6 +4,14 @@
 # Description: Organizes bagfiles into directories based on date modified. 
 # Syncs data to hurst attic network drive and moves original copies into an archive. 
 
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> Stashed changes
+ROBOT="drl-robot"
+GUI_COMPUTER="drl-guilaptop"
+>>>>>>> Stashed changes
 
 # Exit if any command fails
 set -e
