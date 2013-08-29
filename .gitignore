@@ -1,28 +1,2 @@
-# Directories to ignore
-bin/
-lib/
-build/
-srv_gen/
-msg_gen/
-software/atrias_controllers/*/src/*/
-software/atrias_controllers/*/matlab/slprj/
-software/atrias_msgs/src
-software/atrias_msgs/include
-boost/
-typekit/
-.cproject
-.project
-
 # Files to ignore
-*.o
-*.so
-*.pc
-*~
-*.swp
-*.pyc
-*.hex
-*.elf
-.tb_history
-orocos.log
-gui_config.yaml
 robot_definitions/robot_variant_defs.h
