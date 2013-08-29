@@ -1,8 +1,0 @@
-<stack>
-  <description brief="atrias_controllers">drl-sim</description>
-  <author>Soo-Hyun Yoo</author>
-  <license>BSD</license>  
-  <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/atrias_controllers</url>
-  <depend stack="ros" />
-</stack>

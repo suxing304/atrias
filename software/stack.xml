@@ -1,8 +1,0 @@
-<stack>
-  <description brief="atrias">atrias</description>
-  <author>Devin Koepl</author>
-  <license>BSD</license>  
-  <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/atrias</url>
-  <depend stack="ros" />
-</stack>

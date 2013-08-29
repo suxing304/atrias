@@ -1,4 +1,0 @@
-# Shut stuff down
-controller.stop();
-controller.cleanup();
-unloadComponent("controller");

@@ -1,2 +1,0 @@
-# For timestamps
-Header header
