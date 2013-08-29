@@ -1,2 +1,3 @@
 # Files to ignore
 robot_definitions/robot_variant_defs.h
+*.swp
