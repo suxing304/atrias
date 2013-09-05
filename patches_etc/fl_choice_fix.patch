@@ -1,0 +1,51 @@
+diff -r cd8c7963f50a src/ctl_dialog_main.cpp
+--- a/src/ctl_dialog_main.cpp	Tue Jan 08 18:31:22 2013 +0100
++++ b/src/ctl_dialog_main.cpp	Fri Aug 23 13:12:37 2013 -0700
+@@ -660,7 +660,7 @@
+         str << "existiert noch nicht. Soll es als" << endl;
+         str << "DLS-Datenverzeichnis angelegt werden?";
+ 
+-        if (fl_choice(str.str().c_str(), "Nein", "Ja", NULL) == 0) return;
++        if (fl_choice("%s", "Nein", "Ja", NULL, str.str().c_str()) == 0) return;
+ 
+         build_dls_dir = true;
+ 
+@@ -695,7 +695,7 @@
+             str << "ist noch kein DLS-Datenverzeichnis." << endl;
+             str << "Soll es als solches initialisiert werden?";
+ 
+-            if (fl_choice(str.str().c_str(), "Nein", "Ja", NULL) == 0) return;
++            if (fl_choice("%s", "Nein", "Ja", NULL, str.str().c_str()) == 0) return;
+ 
+             build_dls_dir = true;
+         }
+@@ -722,7 +722,7 @@
+             str << "ist noch kein DLS-Datenverzeichnis." << endl;
+             str << "Soll es als solches initialisiert werden?";
+ 
+-            if (fl_choice(str.str().c_str(), "Nein", "Ja", NULL) == 0) return;
++            if (fl_choice("%s", "Nein", "Ja", NULL, str.str().c_str()) == 0) return;
+ 
+             build_dls_dir = true;
+         }
+@@ -812,7 +812,7 @@
+         str << "Für das Verzeichnis \"" << _dls_dir << "\"" << endl;
+         str << "läuft noch kein DLS-Daemon. Jetzt starten?";
+ 
+-        if (fl_choice(str.str().c_str(), "Nein", "Ja", NULL) == 1)
++        if (fl_choice("%s", "Nein", "Ja", NULL, str.str().c_str()) == 1)
+         {
+             if ((pid = fork()) == -1)
+             {
+diff -r cd8c7963f50a src/view_dialog_main.cpp
+--- a/src/view_dialog_main.cpp	Tue Jan 08 18:31:22 2013 +0100
++++ b/src/view_dialog_main.cpp	Fri Aug 23 13:12:37 2013 -0700
+@@ -145,7 +145,7 @@
+         str << "Im DLS-Datenverzeichnis" << endl
+             << "\"" << _dls_dir_path << "\"" << endl
+             << "wurden keine Aufträge gefunden!";
+-        fl_alert(str.str().c_str());
++        fl_alert("%s", str.str().c_str());
+     }
+ 
+     _wnd->show();
