@@ -9,7 +9,7 @@ typedef enum {
 	medulla_state_halt     = 4,
 	medulla_state_error    = 5,
 	medulla_state_reset    = 6,
-	medulla_state_watchdog = 7
+	medulla_state_watchdog = 7    // Hardware watchdog, NOT EtherCAT master
 } medulla_state_t;
 
 // EtherCAT IDs
@@ -130,7 +130,7 @@ typedef enum {
 // The minimum and maximum distance in positions between the motors. For leg length
 // protection. Note: LEG_LOC_SAFETY_DISTANCE does not affect the safety stop position
 // for leg extension and retraction safeties.
-#define LEG_LOC_DIFF_MIN                                             0.510347687
+#define LEG_LOC_DIFF_MIN                                             0.45
 #define LEG_LOC_DIFF_MAX                                                     2.0
 
 #define LEG_LOC_SAFETY_DISTANCE                                              0.2
@@ -142,6 +142,9 @@ typedef enum {
 
 // Acceleration of motor output in radians/s^2/amp
 #define ACCEL_PER_AMP                                                  1.7185879
+
+// Margin for error in halt motor velocity (rad/s)
+#define MOTOR_VEL_MRGN                                                       0.1
 
 // The torque constant, including 50:1 gear reduction (in Nm/A)
 #define TRQ_CONST                                                (50.0 * .0.121)
@@ -215,5 +218,11 @@ typedef enum {
 
 //! The maximum amount of time the realtime loop should take (in nanoseconds).
 #define MAX_RT_LOOP_TIME_NS                                               100000
+
+/**
+  * @brief The gear ratio of the X encoder
+  * Note: This is 9.6:1 (The large pulley has 96 teeth; the small pulley has 10 teeth).
+  */
+#define BOOM_X_GEAR_RATIO                                                    9.6
 
 #endif // ROBOT_INVARIANT_DEFS_H

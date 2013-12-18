@@ -30,6 +30,7 @@
 
 // Datatypes
 #include <robot_invariant_defs.h>
+#include <robot_variant_defs.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_shared/controller_structs.h>
 #include <atrias_shared/atrias_parameters.h>
@@ -66,6 +67,7 @@ class ATCSlipWalking : public ATC<
         void hipController();
         void standingController();
         void shutdownController();
+        void passiveStanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*, ASCRateLimit*);
         void stanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*, ASCRateLimit*);
         void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCLegForce*, ASCLegForce*, ASCRateLimit*, ASCRateLimit*);
         void legSwingController(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
@@ -103,7 +105,7 @@ class ATCSlipWalking : public ATC<
         double rFl, drFl, qFl, dqFl; // Flight leg states
         double qmSA, dqmSA, qmSB, dqmSB; // Stance motor states
         double qmFA, dqmFA, qmFB, dqmFB; // Flight motor states
-        LegForce forceSl, forceFl;
+        LegForce forceSl, forceFl, forceLl, forceRl;
 
         // Leg parameters at exit state (event trigger)
         double reSl, dreSl, qeSl, dqeSl; // Stance leg exit states

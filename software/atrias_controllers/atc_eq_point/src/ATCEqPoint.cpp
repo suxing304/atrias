@@ -151,9 +151,9 @@ void ATCEqPoint::controller() {
 
 	// calculate circle correction for step length
 	gamma = guiIn.pea - guiIn.aea;
-	oPEA = guiIn.pea
+	oPEA = guiIn.pea;
 	iPEA = guiIn.pea - guiIn.rco * 0.09 * gamma;
-	oAEA = guiIn.aea
+	oAEA = guiIn.aea;
 	iAEA = guiIn.aea + guiIn.rco * 0.09 * gamma;
 	phiBs_des_i = iPEA + acos (guiIn.lst);							//desired motor position for stance MOTOR B
 	phiBs_des_o = oPEA + acos (guiIn.lst);							//desired motor position for stance MOTOR B
@@ -232,12 +232,13 @@ void ATCEqPoint::controller() {
                         //****************************************************************flight control left leg*************************************************************************************************************
                         if ((t < 1) && (!sw_flight))
                         {
-                                if (t < 0.1){
+                                if (t < guiIn.lot){
 										pd0Controller.P = guiIn.pfl1;
 										pd0Controller.D = guiIn.dfl1;
 										pd1Controller.P = guiIn.pfl1;
 										pd1Controller.D = guiIn.dfl1;
-                                        l_swing = guiIn.lst - amp * sin(t / guiIn.tsw * M_PI);
+                                        //l_swing = guiIn.lst - amp * sin(t / guiIn.tsw * M_PI);
+						                l_swing = guiIn.lst - amp *  ((-1) * pow(2.0 * t/guiIn.tsw - 1.0, 2.0) + 1.0);
                                         phi_lLeg = iPEA;
                                         logOut.state=11;
                                 } else if (t<guiIn.tsw){
@@ -245,23 +246,25 @@ void ATCEqPoint::controller() {
 										pd0Controller.D = guiIn.dfl1;
 										pd1Controller.P = guiIn.pfl1;
 										pd1Controller.D = guiIn.dfl1;
-										phi_lLeg=iPEA - (t - 0.1) / (guiIn.tsw - 0.1) * (iPEA - iAEA) * (1 + guiIn.aover);
-                                        l_swing = guiIn.lst - amp * sin (t / guiIn.tsw * M_PI);
+										phi_lLeg=iPEA - (t - guiIn.lot) / (guiIn.tsw - guiIn.lot) * (iPEA - iAEA) * (1 + guiIn.aover);
+                                        //l_swing = guiIn.lst - amp * sin (t / guiIn.tsw * M_PI);
+						                l_swing = guiIn.lst -  amp *  ((-1) * pow(2.0 * t/guiIn.tsw - 1.0, 2.0) + 1.0);
                                         logOut.state=12;
                                 } else {
 										pd0Controller.P = guiIn.pfl2;
 										pd0Controller.D = guiIn.dfl2;
 										pd1Controller.P = guiIn.pfl2;
 										pd1Controller.D = guiIn.dfl2;
-                                        phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.lfl) * (iPEA-iAEA) * guiIn.aover;
+                                        phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.tsw) * (iPEA-iAEA) * guiIn.aover;
                                         l_swing = guiIn.lst;
                                         logOut.state=13;
                                 }
-                                //map leg angle sweep of flight leg to 0->1
+
+					  //map leg angle sweep of flight leg to 0->1
                                 std::tie(leftMotorAngle.A, leftMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_lLeg,l_swing);
                                 co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
                                 co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
-								if ((t < 0.1) & (leftMotorAngle.B < (rs.lLeg.halfB.legAngle - (rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle))))
+								if ((t < guiIn.lot) & (leftMotorAngle.B < (rs.lLeg.halfB.legAngle - (rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle))))
 								{
 									co.lLeg.motorCurrentB = guiIn.loc;
                                     logOut.state=11.1;
@@ -279,8 +282,8 @@ void ATCEqPoint::controller() {
                                 co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
                                 logOut.state=14;
                         }
-						co.lLeg.motorCurrentA = clamp(co.lLeg.motorCurrentA,-25,25);
-						co.lLeg.motorCurrentB = clamp(co.lLeg.motorCurrentB,-25,25);
+				//	co.lLeg.motorCurrentA = clamp(co.lLeg.motorCurrentA,-25,25);
+				//	co.lLeg.motorCurrentB = clamp(co.lLeg.motorCurrentB,-25,25);
                         break;
 
 
@@ -312,21 +315,23 @@ void ATCEqPoint::controller() {
                         //*******************************************************************************************************************************************************************************************************************
                         if ((t < 1) && (!sw_flight))
                         {
-                                if (t < 0.1){
+                                if (t < guiIn.lot){
 										pd3Controller.P = guiIn.pfl1;
 										pd3Controller.D = guiIn.dfl1;
 										pd4Controller.P = guiIn.pfl1;
 										pd4Controller.D = guiIn.dfl1;
-                                        l_swing = guiIn.lst - amp * sin(t / guiIn.tsw * M_PI);
-                                        phi_rLeg = oPEA;
+                                        //l_swing = guiIn.lst - amp * sin(t / guiIn.tsw * M_PI);
+						    l_swing = guiIn.lst - amp *  ((-1) * pow(2.0 * t/guiIn.tsw - 1.0, 2.0) + 1.0);
+			                      phi_rLeg = oPEA;
                                         logOut.state=21;
                                 } else if (t<guiIn.tsw){
 										pd3Controller.P = guiIn.pfl1;
 										pd3Controller.D = guiIn.dfl1;
 										pd4Controller.P = guiIn.pfl1;
 										pd4Controller.D = guiIn.dfl1;
-                                        phi_rLeg=oPEA - (t - 0.1) / (guiIn.tsw - 0.1) * (oPEA - oAEA) * (1 + guiIn.aover);
-                                        l_swing = guiIn.lst - amp * sin (t / guiIn.tsw * M_PI);
+                                        phi_rLeg=oPEA - (t - guiIn.lot) / (guiIn.tsw - guiIn.lot) * (oPEA - oAEA) * (1 + guiIn.aover);
+						    l_swing = guiIn.lst - amp *  ((-1) * pow(2.0 * t/guiIn.tsw - 1.0, 2.0) + 1.0);
+                                        //l_swing = guiIn.lst - amp * sin (t / guiIn.tsw * M_PI);
                                         logOut.state=22;
                                 } else {
 										pd3Controller.P = guiIn.pfl2;
@@ -337,11 +342,12 @@ void ATCEqPoint::controller() {
                                         l_swing = guiIn.lst;
                                         logOut.state=23;
                                 }
+
                                 //map leg angle sweep of flight leg to 0->1
                                 std::tie(rightMotorAngle.A, rightMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_rLeg,l_swing);
                                 co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
                                 co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
-								if ((t < 0.1) & (rightMotorAngle.B < (rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle))))
+								if ((t < guiIn.lot) & (rightMotorAngle.B < (rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle))))
 								{
 									co.rLeg.motorCurrentB=guiIn.loc;
                                     logOut.state=21.1;
@@ -359,8 +365,8 @@ void ATCEqPoint::controller() {
                                 co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity)+2;
                                 logOut.state=24;
                         }
-						co.rLeg.motorCurrentA = clamp(co.rLeg.motorCurrentA,-25,25);
-							   co.rLeg.motorCurrentB = clamp(co.rLeg.motorCurrentB,-25,25);
+				//	co.rLeg.motorCurrentA = clamp(co.rLeg.motorCurrentA,-25,25);
+				//	co.rLeg.motorCurrentB = clamp(co.rLeg.motorCurrentB,-25,25);
 						  break;
 
 

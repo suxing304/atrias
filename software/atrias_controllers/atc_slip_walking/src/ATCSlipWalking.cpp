@@ -78,42 +78,58 @@ void ATCSlipWalking::controller() {
             switch (walkingState) {
 
                 case 0: // Right leg single support (right = stance, left = flight)
-                    // Define horizontal pushoff force
-                    pushoffForce = guiIn.pushoff_force;
-
                     // Run state specific controller and event functions
-                    stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
                     legSwingController(&rs.rLeg, &rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB);
+                    //stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
+                    passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascRateLimitRr0);
                     singleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
+
+                    // Inject energy if stance leg has not reached not target angle yet	
+                    if (qSl <= qtSl) {
+                        co.rLeg.motorCurrentA += -guiIn.pushoff_force;
+                        co.rLeg.motorCurrentB += -guiIn.pushoff_force;
+                    // Auto switch walking state once target angle is reached (do not wait for event to occur)
+                    } else {
+                    	if (guiIn.switch_method == 2) {
+                        	walkingState = (walkingState + 1) % 4;
+                    	}
+                    }
                     break;
 
                 case 1: // Double support (right = flight, left = stance)
-                    // Define horizontal pushoff force
-                    pushoffForce = 0.0;
-
                     // Run state specific controller and event functions
-                    stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
-                    stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
+                    //stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
+                    //stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
+                    passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascRateLimitRr0);
+                    passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascRateLimitLr0);
                     doubleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &ascLegForceR, &ascRateLimitLr0, &ascRateLimitRr0);
                     break;
 
                 case 2: // Left leg single support (right = flight, left = stance)
-                    // Define horizontal pushoff force
-                    pushoffForce = guiIn.pushoff_force;
-
                     // Run state specific controller and event functions
-                    stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
                     legSwingController(&rs.lLeg, &rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB);
+                    //stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
+                    passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascRateLimitLr0);
                     singleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &ascLegForceR, &ascRateLimitLr0, &ascRateLimitRr0);
+
+                    // Inject energy if stance leg has not reached not target angle yet	
+                    if (qSl <= qtSl) {
+                        co.lLeg.motorCurrentA += -guiIn.pushoff_force;
+                        co.lLeg.motorCurrentB += -guiIn.pushoff_force;
+                    // Auto switch walking state once target angle is reached (do not wait for event to occur)
+                    } else {
+                    	if (guiIn.switch_method == 2) {
+                        	walkingState = (walkingState + 1) % 4;
+                    	}
+                    }
                     break;
 
                 case 3: // Double support (right = stance, left = flight)
-                    // Define horizontal pushoff force
-                    pushoffForce = 0.0;
-
                     // Run state specific controller and event functions
-                    stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
-                    stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
+                    //stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
+                    //stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
+                    passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascRateLimitLr0);
+                    passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascRateLimitRr0);
                     doubleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
                     break;
             }
@@ -130,6 +146,12 @@ void ATCSlipWalking::controller() {
             updateExitConditions(&rs.rLeg, &rs.lLeg, &ascRateLimitRr0, &ascRateLimitLr0);
             break;
     }
+
+    // Current limiters for debug
+    co.lLeg.motorCurrentA = clamp(co.lLeg.motorCurrentA, -10, 10);
+    co.lLeg.motorCurrentB = clamp(co.lLeg.motorCurrentB, -10, 10);
+    co.rLeg.motorCurrentA = clamp(co.rLeg.motorCurrentA, -10, 10);
+    co.rLeg.motorCurrentB = clamp(co.rLeg.motorCurrentB, -10, 10);
 }
 
 /**
@@ -177,13 +199,18 @@ void ATCSlipWalking::updateController() {
     ascPDLh.P = ascPDRh.P = guiIn.hip_pos_kp;
     ascPDLh.D = ascPDRh.D = guiIn.hip_pos_kd;
 
+    // Compute actual leg force from spring deflection and robot state
+    forceLl = ascLegForceL.compute(rs.lLeg, rs.position);
+    forceRl = ascLegForceR.compute(rs.rLeg, rs.position);
+    
     // Debug
     isManualFlightLegTO = guiIn.flight_to;
     isManualFlightLegTD = guiIn.flight_td;
     guiOut.walking_state = walkingState;
-    guiOut.td_position = positionTD;
-    guiOut.td_force = forceTD;
-    guiOut.to_force = forceTO;
+    guiOut.left_force = forceLl.fz;
+    guiOut.right_force = forceRl.fz;
+    guiOut.right_position = BOOM_HEIGHT + BOOM_LENGTH*sin(rs.position.boomAngle) - PROXIMAL_LEG_LENGTH*(cos(rs.rLeg.hip.legBodyAngle)*sin(rs.rLeg.halfA.legAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET)) - cos(rs.rLeg.halfA.legAngle)*cos(rs.position.boomAngle)*sin(rs.position.bodyPitch - (3.0*M_PI)/2.0) + sin(rs.rLeg.halfA.legAngle)*sin(rs.rLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET))) + TORSO_LENGTH*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET)) + DISTAL_LEG_LENGTH*(sin(rs.rLeg.halfA.legAngle - rs.rLeg.halfB.legAngle)*(cos(rs.position.boomAngle)*sin(rs.rLeg.halfA.legAngle)*sin(rs.position.bodyPitch - (3.0*M_PI)/2.0) + cos(rs.rLeg.halfA.legAngle)*cos(rs.rLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET)) + cos(rs.rLeg.halfA.legAngle)*sin(rs.rLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET))) - cos(rs.rLeg.halfA.legAngle - rs.rLeg.halfB.legAngle)*(cos(rs.rLeg.hip.legBodyAngle)*sin(rs.rLeg.halfA.legAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET)) - cos(rs.rLeg.halfA.legAngle)*cos(rs.position.boomAngle)*sin(rs.position.bodyPitch - (3.0*M_PI)/2.0) + sin(rs.rLeg.halfA.legAngle)*sin(rs.rLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET)))) + HIP_LENGTH*cos(rs.rLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET)) - HIP_LENGTH*sin(rs.rLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET));
+    guiOut.left_position = BOOM_HEIGHT + BOOM_LENGTH*sin(rs.position.boomAngle) - PROXIMAL_LEG_LENGTH*(cos(rs.lLeg.hip.legBodyAngle)*sin(rs.lLeg.halfA.legAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET)) - cos(rs.lLeg.halfA.legAngle)*cos(rs.position.boomAngle)*sin(rs.position.bodyPitch - (3.0*M_PI)/2.0) + sin(rs.lLeg.halfA.legAngle)*sin(rs.lLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET))) + TORSO_LENGTH*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET)) + DISTAL_LEG_LENGTH*(sin(rs.lLeg.halfA.legAngle - rs.lLeg.halfB.legAngle)*(cos(rs.position.boomAngle)*sin(rs.lLeg.halfA.legAngle)*sin(rs.position.bodyPitch - (3.0*M_PI)/2.0) + cos(rs.lLeg.halfA.legAngle)*cos(rs.lLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET)) + cos(rs.lLeg.halfA.legAngle)*sin(rs.lLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET))) - cos(rs.lLeg.halfA.legAngle - rs.lLeg.halfB.legAngle)*(cos(rs.lLeg.hip.legBodyAngle)*sin(rs.lLeg.halfA.legAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET)) - cos(rs.lLeg.halfA.legAngle)*cos(rs.position.boomAngle)*sin(rs.position.bodyPitch - (3.0*M_PI)/2.0) + sin(rs.lLeg.halfA.legAngle)*sin(rs.lLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET)))) - HIP_LENGTH*cos(rs.lLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET)) + HIP_LENGTH*sin(rs.lLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET));
     guiOut.isEnabled = isEnabled();
 }
 
@@ -253,6 +280,36 @@ void ATCSlipWalking::shutdownController() {
     co.rLeg.motorCurrentHip = ascPDRh(0.0, 0.0, 0.0, rs.rLeg.hip.legBodyVelocity);
 }
 
+
+/**
+ * @brief Stance leg passive controller.
+ * @param rsSl Stance leg robot state pointer.
+ * @param coSl Stance leg controller ouput pointer.
+ * @param ascPDSmA Stance leg motor A PD position controller pointer.
+ * @param ascPDSmB Stance leg motor B PD position controller pointer.
+ * 
+ * A simple stance phase controller allowing only leg length 
+ * forces with zero leg angle torques. Uses a position controller to 
+ * keep virtual motor leg length constant while minimizing spring 
+ * about the hip. Can be used with mechanical motor lock device.
+ */
+void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *ascPDSmA, ASCPD *ascPDSmB, ASCRateLimit *ascRateLimitSr0) {
+    // Rate limit change in spring rest length from current to desired
+    r0Sl = ascRateLimitSr0->operator()(r0, springRateLimit);
+    
+    // Compute current leg angle and length
+    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+		
+    // Compute and set motor angles such that there is no hip torque, only 
+    // axial leg forces
+    std::tie(qmSA, qmSB) = ascCommonToolkit.legPos2MotorPos(qSl, r0Sl);
+
+    // Compute and set motor currents from position based PD controllers
+    coSl->motorCurrentA = ascPDSmA->operator()(qmSA, rsSl->halfA.motorAngle, 0.0, rsSl->halfA.motorVelocity) + KS*(rsSl->halfA.motorAngle - rsSl->halfA.legAngle);
+    coSl->motorCurrentB = ascPDSmB->operator()(qmSB, rsSl->halfB.motorAngle, 0.0, rsSl->halfB.motorVelocity) + KS*(rsSl->halfB.motorAngle - rsSl->halfB.legAngle);
+}
+
+
 /**
  * @brief Stance leg force tracking controller.
  * @param rsSl Stance leg robot state pointer.
@@ -282,9 +339,6 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     forceSl.fz = k*(rSl - r0Sl)*sin(qSl);
     forceSl.dfz = drSl*sin(qSl)*k - dk*sin(qSl)*(r0Sl - rSl) + dqSl*cos(qSl)*k*(rSl - r0Sl);
 
-    // Add a horizontal force to inject energy and pushoff
-    forceSl.fx += pushoffForce;
-
     // Use force tracking controller to compute required motor currents
     std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = ascLegForceSl->control(forceSl, *rsSl, rs.position);
 }
@@ -310,8 +364,8 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     std::tie(dqFl, drFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
 
     // Error catch the dependant to avoid trajectory being flipped if master leg starts past its predicted end location
-    if (qeSl > qtSl - 0.1) {
-        qtSl = qeSl + 0.1;
+    if (qeSl > qtSl - 0.2) {
+        qtSl = qeSl + 0.2;
     }
 
     // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
@@ -343,8 +397,8 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     coFl->motorCurrentB = ascPDmB->operator()(qmFB, rsFl->halfB.motorAngle, dqmFB, rsFl->halfB.motorVelocity);
 
     // Clamp the motor currents during leg swing to let the amlifiers recover for the upcoming stance.
-    coFl->motorCurrentA = clamp(coFl->motorCurrentA, -30.0, 30.0);
-    coFl->motorCurrentB = clamp(coFl->motorCurrentB, -30.0, 30.0);
+    //coFl->motorCurrentA = clamp(coFl->motorCurrentA, -30.0, 30.0);
+    //coFl->motorCurrentB = clamp(coFl->motorCurrentB, -30.0, 30.0);
 }
 
 /**
@@ -359,7 +413,6 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
  * This function computes logical conditionals and uses a decision tree
  * to determine if a single support event has been triggered and responds accordingly.
  */
-// TODO compute conditionals with hip angle and body pitch accounted for
 void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
     // Compute the current flight leg angle and length
     std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
@@ -371,14 +424,14 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
 
     // Compute conditionals for event triggers
     isStanceLegTO = (forceSl.fz >= -forceThresholdTO);
-    isFlightLegTD = (forceFl.fz <= -forceThresholdTD) && (rFl*sin(qFl) >= rSl*sin(qSl) - positionThresholdTD);
+    isFlightLegTD = (forceFl.fz <= -forceThresholdTD) && (rFl*sin(qFl) >= rSl*sin(qSl) - positionThresholdTD); // TODO replace this with correct forward kinematics derived in MATLAB
     isForwardStep = (rSl*cos(qSl) <= rFl*cos(qFl));
     isBackwardStep = (rSl*cos(qSl) > rFl*cos(qFl));
 
     // Set debug status values
     forceTD = forceFl.fz;
-    forceTO = 0.0;
-    positionTD = rSl*sin(qSl) - rFl*sin(qFl);
+    forceTO = forceSl.fz;
+    positionTD = rSl*sin(qSl) - rFl*sin(qFl); // TODO replace with correct forward kinematics derived values
 
     // Flight leg touch down event (trigger next state)
     if ((isFlightLegTD || isManualFlightLegTD) && isForwardStep) {
@@ -421,13 +474,13 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     forceSl = ascLegForceSl->compute(*rsSl, rs.position);
 
     // Set debug status output values
-    forceTD = 0.0;
+    forceTD = forceSl.fz;
     forceTO = forceFl.fz;
     positionTD = 0.0;
 
     // Compute conditionals for event triggers
-    isFlightLegTO = forceFl.fz >= -forceThresholdTO;
-    isStanceLegTO = forceSl.fz >= -forceThresholdTO;
+    isFlightLegTO = forceFl.fz >= forceThresholdTO;
+    isStanceLegTO = forceSl.fz >= forceThresholdTO;
 
     // Flight leg take off (trigger next state)
     if (isFlightLegTO || isManualFlightLegTO) {
@@ -443,6 +496,7 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
         // Do nothing, this means we started going backwards
     }
 }
+
 
 /**
  * @brief Update exit conditions.

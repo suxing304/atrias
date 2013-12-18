@@ -4,7 +4,6 @@
 # Description: Organizes bagfiles into directories based on date modified. 
 # Syncs data to hurst attic network drive and moves original copies into an archive. 
 
-
 # Exit if any command fails
 set -e
 
@@ -16,13 +15,11 @@ WARNING="\033[1m\033[93m"
 FAIL="\033[1m\033[91m"
 ENDC="\033[0m"
 
-
-
 # Startup message
 printf "\n${OKBLUE}[Starting!]${ENDC} sync_data.sh\n\n"
 
 # Define computers
-ROBOT_HOSTNAME="i1000a-3"
+ROBOT_HOSTNAME="i1000a-1"
 HURST="//attic.engr.oregonstate.edu/hurst"
 MOUNT_DIR="/mnt/attic"
 SOURCE_DIR="$(rospack find atrias)/bagfiles"
@@ -107,18 +104,20 @@ for file in $file_list; do
 	# Parse out file name and path
 	file_name=$(basename "$file")
 	file_path=$(dirname "$file")
- 
-	# Get the files modified date
-	file_date=$(date -d @$(stat --format %Y "$file") +%F)
- 
+
+	# Get the files modified date and time
+#	file_date=$(date -d @$(stat --format %Y "$file") +%F)
+	file_date=${file_name:7:10}
+	file_time=${file_name:18:8}
+
 	# If the folder does not already exist, create it
-	if [ ! -d "${SORT_DIR}/${file_date}" ]; then
-		mkdir -p "${SORT_DIR}/${file_date}"
+	if [ ! -d "${SORT_DIR}/${file_date}/${file_time}" ]; then
+		mkdir -p "${SORT_DIR}/${file_date}/${file_time}"
 	fi
 
 	# Now transfer the file to the target directory
-	mv -i "$file" "${SORT_DIR}/${file_date}/${file_name}"
-	printf "${OKBLUE}[${sorted_count}/${total_count}]${ENDC} ${file_name} ${HEADER}moved to${ENDC} ${SORT_DIR}/${file_date}\n"
+	mv -i "$file" "${SORT_DIR}/${file_date}/${file_time}/${file_name}"
+	printf "${OKBLUE}[${sorted_count}/${total_count}]${ENDC} ${file_name} ${HEADER}moved to${ENDC} ${SORT_DIR}/${file_date}/${file_time}\n"
 
 done
 
@@ -144,6 +143,7 @@ printf "${OKGREEN}[Done!]${ENDC}\n\n"
 
 # Delete robot computer copies of files
 printf "${OKGREEN}[Deleting files from robot computer...]${ENDC}\n"
+mv ${SORT_DIR}/* "${SOURCE_DIR}/backup"
 sudo rm -r "$SORT_DIR"
 printf "${OKGREEN}[Done!]${ENDC}\n\n"
 

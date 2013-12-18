@@ -1,6 +1,6 @@
 # Main Controller Options
 uint8 main_controller
-uint8 gait_transitions
+uint8 switch_method
 
 # Gait Options
 float64 atrias_spring
@@ -32,6 +32,7 @@ float64 right_toe_pos
 uint8 flight_to
 uint8 flight_td
 float64 walking_state
-float64 td_position
-float64 td_force
-float64 to_force
+float64 left_position
+float64 right_position
+float64 left_force
+float64 right_force

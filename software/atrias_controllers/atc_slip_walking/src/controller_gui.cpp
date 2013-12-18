@@ -14,7 +14,7 @@ void flight_to_released() {controllerDataOut.flight_to = 0;}
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     // Main controller options
     gui->get_widget("main_controller_combobox", main_controller_combobox);
-    gui->get_widget("gait_transitions_combobox", gait_transitions_combobox);
+    gui->get_widget("switch_method_combobox", switch_method_combobox);
     
     // Gait options
     gui->get_widget("atrias_spring_spinbutton", atrias_spring_spinbutton);
@@ -24,7 +24,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("slip_leg_spinbutton", slip_leg_spinbutton);
     slip_leg_spinbutton->set_range(0.75, 0.95);
     slip_leg_spinbutton->set_increments(0.01, 0.0);
-    slip_leg_spinbutton->set_value(0.93);
+    slip_leg_spinbutton->set_value(0.9);
     gui->get_widget("stance_leg_target_spinbutton", stance_leg_target_spinbutton);
     stance_leg_target_spinbutton->set_range(M_PI/2.0, M_PI/2.0 + 0.40);
     stance_leg_target_spinbutton->set_increments(0.01, 0.0);
@@ -32,11 +32,11 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("flight_leg_target_spinbutton", flight_leg_target_spinbutton);
     flight_leg_target_spinbutton->set_range(M_PI/2.0 - 0.40, M_PI/2.0);
     flight_leg_target_spinbutton->set_increments(0.01, 0.0);
-    flight_leg_target_spinbutton->set_value(1.3);
+    flight_leg_target_spinbutton->set_value(1.33);
     gui->get_widget("swing_leg_retraction_spinbutton", swing_leg_retraction_spinbutton);
     swing_leg_retraction_spinbutton->set_range(0.0, 0.15);
     swing_leg_retraction_spinbutton->set_increments(0.01, 0.0);
-    swing_leg_retraction_spinbutton->set_value(0.12);
+    swing_leg_retraction_spinbutton->set_value(0.15);
     gui->get_widget("pushoff_force_spinbutton", pushoff_force_spinbutton);
     pushoff_force_spinbutton->set_range(-500.0, 0.0);
     pushoff_force_spinbutton->set_increments(5.0, 0.0);
@@ -46,15 +46,15 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("force_threshold_td_spinbutton", force_threshold_td_spinbutton);
     force_threshold_td_spinbutton->set_range(-100.0, 100.0);
     force_threshold_td_spinbutton->set_increments(1.0, 0.0);
-    force_threshold_td_spinbutton->set_value(40.0);
+    force_threshold_td_spinbutton->set_value(50.0);
     gui->get_widget("force_threshold_to_spinbutton", force_threshold_to_spinbutton);
     force_threshold_to_spinbutton->set_range(-100.0, 100.0);
     force_threshold_to_spinbutton->set_increments(1.0, 0.0);
-    force_threshold_to_spinbutton->set_value(0.0);
+    force_threshold_to_spinbutton->set_value(-50.0);
     gui->get_widget("position_threshold_td_spinbutton", position_threshold_td_spinbutton);
     position_threshold_td_spinbutton->set_range(0.0, 0.05);
     position_threshold_td_spinbutton->set_increments(0.001, 0.0);
-    position_threshold_td_spinbutton->set_value(0.02);
+    position_threshold_td_spinbutton->set_value(0.015);
 
     // Leg gains
     gui->get_widget("leg_pos_kp_spinbutton", leg_pos_kp_spinbutton);
@@ -76,7 +76,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("leg_for_kd_spinbutton", leg_for_kd_spinbutton);
     leg_for_kd_spinbutton->set_range(0.0, 50.0);
     leg_for_kd_spinbutton->set_increments(1.0, 0.0);
-    leg_for_kd_spinbutton->set_value(2.0);
+    leg_for_kd_spinbutton->set_value(1.0);
 
     // Hip gains
     gui->get_widget("hip_pos_kp_spinbutton", hip_pos_kp_spinbutton);
@@ -86,7 +86,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("left_toe_pos_spinbutton", left_toe_pos_spinbutton);
     left_toe_pos_spinbutton->set_range(2.1, 2.5);
     left_toe_pos_spinbutton->set_increments(0.01, 0.0);
-    left_toe_pos_spinbutton->set_value(2.20);
+    left_toe_pos_spinbutton->set_value(2.17);
     gui->get_widget("hip_pos_kd_spinbutton", hip_pos_kd_spinbutton);
     hip_pos_kd_spinbutton->set_range(0.0, 50.0);
     hip_pos_kd_spinbutton->set_increments(1.0, 0.0);
@@ -107,15 +107,18 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     walking_state_spinbutton->set_range(0, 3);
     walking_state_spinbutton->set_increments(1, 0);
     walking_state_spinbutton->set_value(0);
-    gui->get_widget("td_position_spinbutton", td_position_spinbutton);
-    td_position_spinbutton->set_range(-0.05, 0.05);
-    td_position_spinbutton->set_increments(0.001, 0.0);
-    gui->get_widget("td_force_spinbutton", td_force_spinbutton);
-    td_force_spinbutton->set_range(-100.0, 100.0);
-    td_force_spinbutton->set_increments(0.1, 0.0);
-    gui->get_widget("to_force_spinbutton", to_force_spinbutton);
-    to_force_spinbutton->set_range(-100.0, 100.0);
-    to_force_spinbutton->set_increments(0.1, 0.0);
+    gui->get_widget("left_position_spinbutton", left_position_spinbutton);
+    left_position_spinbutton->set_range(-1, 1);
+    left_position_spinbutton->set_increments(0.001, 0.0);
+    gui->get_widget("right_position_spinbutton", right_position_spinbutton);
+    right_position_spinbutton->set_range(-1, -1);
+    right_position_spinbutton->set_increments(0.001, 0.0);
+    gui->get_widget("left_force_spinbutton", left_force_spinbutton);
+    left_force_spinbutton->set_range(-10000, 10000);
+    left_force_spinbutton->set_increments(0.1, 0.0);
+    gui->get_widget("right_force_spinbutton", right_force_spinbutton);
+    right_force_spinbutton->set_range(-10000, 10000);
+    right_force_spinbutton->set_increments(0.1, 0.0);
 
     // Set up subscriber and publisher.
     sub = nh.subscribe("ATCSlipWalking_status", 0, controllerCallback);
@@ -135,10 +138,10 @@ void getParameters() {
     nh.getParam("/atrias_gui/main_controller", main_controller);
     controllerDataOut.main_controller = (uint8_t)main_controller;
     main_controller_combobox->set_active(controllerDataOut.main_controller);
-    int gait_transitions;
-    nh.getParam("/atrias_gui/gait_transitions", gait_transitions);
-    controllerDataOut.gait_transitions = (uint8_t)gait_transitions;
-    gait_transitions_combobox->set_active(controllerDataOut.gait_transitions);
+    int switch_method;
+    nh.getParam("/atrias_gui/switch_method", switch_method);
+    controllerDataOut.switch_method = (uint8_t)switch_method;
+    switch_method_combobox->set_active(controllerDataOut.switch_method);
     
     // Gait options
     nh.getParam("/atrias_gui/atrias_spring", controllerDataOut.atrias_spring);
@@ -187,19 +190,21 @@ void getParameters() {
     // Debug
     nh.getParam("/atrias_gui/walking_state", controllerDataOut.walking_state);
     walking_state_spinbutton->set_value(controllerDataOut.walking_state);
-    nh.getParam("/atrias_gui/td_position", controllerDataOut.td_position);
-    td_position_spinbutton->set_value(controllerDataOut.td_position);
-    nh.getParam("/atrias_gui/td_force", controllerDataOut.td_force);
-    td_force_spinbutton->set_value(controllerDataOut.td_force);
-    nh.getParam("/atrias_gui/to_force", controllerDataOut.to_force);
-    to_force_spinbutton->set_value(controllerDataOut.to_force);
+    nh.getParam("/atrias_gui/left_position", controllerDataOut.left_position);
+    left_position_spinbutton->set_value(controllerDataOut.left_position);
+    nh.getParam("/atrias_gui/right_position", controllerDataOut.right_position);
+    right_position_spinbutton->set_value(controllerDataOut.right_position);
+    nh.getParam("/atrias_gui/left_force", controllerDataOut.left_force);
+    left_force_spinbutton->set_value(controllerDataOut.left_force);
+    nh.getParam("/atrias_gui/right_force", controllerDataOut.right_force);
+    right_force_spinbutton->set_value(controllerDataOut.right_force);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
     // Main controller options
     nh.setParam("/atrias_gui/main_controller", controllerDataOut.main_controller);
-    nh.setParam("/atrias_gui/gait_transitions", controllerDataOut.gait_transitions);
+    nh.setParam("/atrias_gui/switch_method", controllerDataOut.switch_method);
 
     // Gait options
     nh.setParam("/atrias_gui/atrias_spring", controllerDataOut.atrias_spring);
@@ -229,9 +234,10 @@ void setParameters() {
 
     // Debug
     nh.setParam("/atrias_gui/walking_state", controllerDataOut.walking_state);
-    nh.setParam("/atrias_gui/td_position", controllerDataOut.td_position);
-    nh.setParam("/atrias_gui/td_force", controllerDataOut.td_force);
-    nh.setParam("/atrias_gui/to_force", controllerDataOut.to_force);
+    nh.setParam("/atrias_gui/left_position", controllerDataOut.left_position);
+    nh.setParam("/atrias_gui/right_position", controllerDataOut.right_position);
+    nh.setParam("/atrias_gui/left_force", controllerDataOut.left_force);
+    nh.setParam("/atrias_gui/right_force", controllerDataOut.right_force);
 }
 
 //! \brief Update the GUI.
@@ -239,7 +245,7 @@ void guiUpdate() {
     // Main controller options
     controllerDataOut.main_controller = (uint8_t)main_controller_combobox->get_active_row_number();
     // TODO if not enabled switch back to standing controller.
-    controllerDataOut.gait_transitions = (uint8_t)gait_transitions_combobox->get_active_row_number();
+    controllerDataOut.switch_method = (uint8_t)switch_method_combobox->get_active_row_number();
     
     // Gait options
     controllerDataOut.atrias_spring = atrias_spring_spinbutton->get_value();
@@ -269,9 +275,10 @@ void guiUpdate() {
 
     // Debug
     walking_state_spinbutton->set_value(controllerDataIn.walking_state);
-    td_position_spinbutton->set_value(controllerDataIn.td_position);
-    td_force_spinbutton->set_value(controllerDataIn.td_force);
-    to_force_spinbutton->set_value(controllerDataIn.to_force);
+    left_position_spinbutton->set_value(controllerDataIn.left_position);
+    right_position_spinbutton->set_value(controllerDataIn.right_position);
+    left_force_spinbutton->set_value(controllerDataIn.left_force);
+    right_force_spinbutton->set_value(controllerDataIn.right_force);
 
     // publish the controller input
     pub.publish(controllerDataOut);
