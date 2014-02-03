@@ -2,7 +2,7 @@
 # Written by: Kit Morton
 
 # MCU Options
-MCU = atxmega128a1
+MCU = atxmega128a1 
 F_CPU = 32000000
 
 # Output file name (without extension)
