@@ -20,6 +20,7 @@ typedef enum {
 #define MEDULLA_IMU_PRODUCT_CODE                                      0x00000006
 #define MEDULLA_TEST_PRODUCT_CODE                                     0x00000004
 #define KPA_SLAVE_CARD_PRODUCT_CODE                                   0x00000005
+#define MEDULLA_BALLSCREW_PRODUCT_CODE                                0x00000006
 #define MEDULLA_ASSIGN_ACTIVATE_WORD                                      0x0300
 
 // Total size of process data in each direction for each Medulla type
@@ -31,6 +32,8 @@ typedef enum {
 #define MEDULLA_BOOM_OUTPUTS_SIZE                                              3
 #define MEDULLA_IMU_INPUTS_SIZE                                               32
 #define MEDULLA_IMU_OUTPUTS_SIZE                                               3
+#define MEDULLA_BALLSCREW_INPUTS_SIZE                                         25
+#define MEDULLA_BALLSCREW_OUTPUTS_SIZE                                         7
 
 // Number of PDO entries in each direction for each Medulla type
 #define MEDULLA_LEG_TX_PDO_COUNT                                              24
@@ -42,6 +45,8 @@ typedef enum {
 #define MEDULLA_BOOM_RX_PDO_COUNT                                              2
 #define MEDULLA_IMU_TX_PDO_COUNT                                              13
 #define MEDULLA_IMU_RX_PDO_COUNT                                               2
+#define MEDULLA_BALLSCREW_TX_PDO_COUNT                                        17
+#define MEDULLA_BALLSCREW_RX_PDO_COUNT                                         3
 
 // Medulla IDs
 #define MEDULLA_ID_PREFIX_MASK                                              0x30
@@ -50,6 +55,7 @@ typedef enum {
 #define MEDULLA_BOOM_ID_PREFIX                                              0x20
 //#define MEDULLA_TEST_ID_PREFIX                                              0x30
 #define MEDULLA_IMU_ID_PREFIX                                               0x30
+#define MEDULLA_BALLSCREW_ID_PREFIX                                         0x35
 
 #define MEDULLA_AMPLIFIER_DEBUG                                             0x00
 #define MEDULLA_LEFT_LEG_A_ID                       (MEDULLA_LEG_ID_PREFIX  + 1)
@@ -61,6 +67,7 @@ typedef enum {
 #define MEDULLA_BOOM_ID                             (MEDULLA_BOOM_ID_PREFIX + 0)
 #define MEDULLA_IMU_ID                              (MEDULLA_IMU_ID_PREFIX  + 0)
 #define MEDULLA_IMU_DEBUG_ID                        (MEDULLA_IMU_ID_PREFIX  + 1)
+#define MEDULLA_BALLSCREW_ID                        (MEDULLA_BALLSCREW_ID_PREFIX + 1)
 
 // Limit switch masks for medullas
 #define MEDULLA_LLEG_ASIDE_LSW_MASK                    0b00111111

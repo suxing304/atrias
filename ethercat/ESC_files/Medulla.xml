@@ -699,6 +699,320 @@
 					<ConfigData>05050008A8610000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
+			<!-- Below is the XML for the Ballscrew Tester which is duplicated from the hip XML -->
+			<Device Physics="YY">
+				<Type ProductCode="#x00000006" RevisionNo="#x00000001">ATRIAS 2.1 Ballscrew (Medulla 1.5)</Type>
+				<Name LcId="1033"><![CDATA[ATRIAS 2.1 Ballscrew (Medulla 1.5)]]></Name>
+				<GroupType>Medulla</GroupType>
+				<Fmmu OpOnly="1" Sm="2">Outputs</Fmmu>
+				<Fmmu OpOnly="1" Sm="3">Inputs</Fmmu>
+				<Sm Enable="0" />
+				<Sm Enable="0" />
+				<Sm StartAddress="#x1000" ControlByte="#x4" Enable="1">Outputs</Sm>
+				<Sm StartAddress="#x2000" ControlByte="#x0" Enable="1">Inputs</Sm>
+				<RxPdo Fixed="1" Sm="2">
+					<Index>#x1601</Index>
+					<Name>uControllerInput</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Command</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Counter</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0004</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>32</BitLen>
+						<Name>Motor Current</Name>
+						<DataType>DINT</DataType>
+					</Entry>
+				</RxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A08</Index>
+					<Name>uController Status</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>ID</Name>
+						<DataType>USINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>3</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>State</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>4</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Counter</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>5</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Error Flags</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>6</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Limit Switch</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A09</Index>
+					<Name>Ballscrew Encoder</Name>
+					<Entry>
+						<Index>#x0007</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>32</BitLen>
+						<Name>Encoder</Name>
+						<DataType>UDINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A0A</Index>
+					<Name>Power</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>3</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Motor Voltage</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>4</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Logic Voltage</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+<!--			<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A0B</Index>
+					<Name>Thermistors</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>5</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Thermistor 0</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>6</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Thermistor 1</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>7</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Thermistor 2</Name>
+						<DataType>UINT</DataType>
+					</Entry>	
+				</TxPdo> -->
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A0C</Index>
+					<Name>Measured Current</Name>
+					<Entry>
+						<Index>#x0002</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Amp Measured Current</Name>
+						<DataType>INT</DataType>
+					</Entry>					
+				</TxPdo>
+<!--				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A0D</Index>
+					<Name>IMU Data</Name>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>1</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>AccelX</Name>
+					</Entry>					
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>2</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>AccelY</Name>
+					</Entry>					
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>3</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>AccelZ</Name>
+					</Entry>					
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>4</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>AngRateX</Name>
+					</Entry>					
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>5</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>AngRateY</Name>
+					</Entry>					
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>6</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>AngRateZ</Name>
+					</Entry>					
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>7</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M11</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>8</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M12</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>9</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M13</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>10</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M21</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>11</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M22</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>12</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M23</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>13</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M31</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>14</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M32</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>15</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M33</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0004</Index>
+						<SubIndex>2</SubIndex>
+						<DataType>DINT</DataType>
+						<BitLen>32</BitLen>
+						<Name>Timer</Name>
+					</Entry>
+				</TxPdo> -->
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A0E</Index>
+					<Name>Incremental Encoder</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>8</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Incremental Encoder</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>9</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Incremental Encoder Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A0F</Index>
+					<Name>Robot Current</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>10</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Robot Current 50 Amp</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>11</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Robot Current 600 Amp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<Dc UnknownFRMW="0" Unknown64Bit="0">
+					<OpMode>
+						<Name>DcSync</Name>
+						<Desc>DC for synchronization</Desc>
+						<AssignActivate>#x0300</AssignActivate>
+						<CycleTimeSync0 Factor="1">1000000</CycleTimeSync0>
+						<ShiftTimeSync0>0</ShiftTimeSync0>
+					</OpMode>
+				</Dc>
+				<Eeprom>
+					<ByteSize>2048</ByteSize>
+					<ConfigData>05050008A8610000000000000000</ConfigData>
+				</Eeprom>
+			</Device>
+			<!-- End of duplicated code -->
 			<Device Physics="YY">
 				<Type ProductCode="#x00000003" RevisionNo="#x00000001">ATRIAS 2.1 Boom (Medulla 1.5)</Type>
 				<Name LcId="1033"><![CDATA[ATRIAS 2.1 Boom (Medulla 1.5)]]></Name>
