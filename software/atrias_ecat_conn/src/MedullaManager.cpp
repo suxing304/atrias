@@ -17,13 +17,14 @@ void MedullaManager::OutputsConfig(uint8_t* slave_outputs, intptr_t* outputs_arr
 }
 
 MedullaManager::MedullaManager() {
-	lLegA   = NULL;
-	lLegB   = NULL;
-	rLegA   = NULL;
-	rLegB   = NULL;
-	boom    = NULL;
-	lLegHip = NULL;
-	rLegHip = NULL;
+	lLegA     = NULL;
+	lLegB     = NULL;
+	rLegA     = NULL;
+	rLegB     = NULL;
+	boom      = NULL;
+	lLegHip   = NULL;
+	rLegHip   = NULL;
+	ballscrew = NULL;
 }
 
 MedullaManager::~MedullaManager() {
@@ -34,6 +35,7 @@ MedullaManager::~MedullaManager() {
 	delete(boom);
 	delete(lLegHip);
 	delete(rLegHip);
+	delete(ballscrew);
 }
 
 void MedullaManager::slaveCardInit(ec_slavet slave) {
@@ -99,6 +101,15 @@ void MedullaManager::initHipMedulla(ec_slavet slave) {
 			delete(medulla);
 			break;
 	}
+}
+
+void MedullaManager::initBallscrewMedulla(ec_slavet slave) {
+	medullaDrivers::BallscrewMedulla* medulla =
+		new medullaDrivers::BallscrewMedulla();
+	fillInPDORegData(medulla->getPDORegData(), (uint8_t*) slave.outputs, (uint8_t*) slave.inputs);
+	medulla->postOpInit();
+	log(RTT::Info) << "Ballscrew medulla detected, ID: " <<
+		(int) medulla->getID() << RTT::endlog();
 }
 
 void MedullaManager::initLegMedulla(ec_slavet slave) {
@@ -177,6 +188,11 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 				initHipMedulla(slaves[i]);
 				break;
 			}
+
+			case MEDULLA_BALLSCREW_PRODUCT_CODE: {
+				initBallscrewMedulla(slaves[i]);
+				break;
+			}
 			
 			default: {
 				log(RTT::Warning) <<
@@ -213,6 +229,8 @@ void MedullaManager::processReceiveData() {
 		lLegHip->processReceiveData(robotState);
 	if (rLegHip)
 		rLegHip->processReceiveData(robotState);
+	if (ballscrew)
+		ballscrew->processReceiveData(robotState);
 }
 
 void MedullaManager::processTransmitData(atrias_msgs::controller_output& controller_output) {
@@ -230,6 +248,8 @@ void MedullaManager::processTransmitData(atrias_msgs::controller_output& control
 		lLegHip->processTransmitData(controller_output);
 	if (rLegHip)
 		rLegHip->processTransmitData(controller_output);
+	if (ballscrew)
+		ballscrew->processTransmitData(controller_output);
 }
 
 void MedullaManager::setTimingInfo(atrias_msgs::robot_state_timing& timing_info) {

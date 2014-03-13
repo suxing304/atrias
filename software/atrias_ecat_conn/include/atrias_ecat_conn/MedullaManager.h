@@ -23,6 +23,7 @@ extern "C" {
 #include <atrias_medulla_drivers/BoomMedulla.h>
 #include <atrias_medulla_drivers/LegMedulla.h>
 #include <atrias_medulla_drivers/HipMedulla.h>
+#include <atrias_medulla_drivers/BallscrewMedulla.h>
 #include <atrias_medulla_drivers/Medulla.h>
 
 namespace atrias {
@@ -31,13 +32,14 @@ namespace ecatConn {
 
 class MedullaManager {
 	// All of our Medullas:
-	medullaDrivers::LegMedulla*  lLegA;
-	medullaDrivers::LegMedulla*  lLegB;
-	medullaDrivers::LegMedulla*  rLegA;
-	medullaDrivers::LegMedulla*  rLegB;
-	medullaDrivers::BoomMedulla* boom;
-	medullaDrivers::HipMedulla*  lLegHip;
-	medullaDrivers::HipMedulla*  rLegHip;
+	medullaDrivers::LegMedulla*       lLegA;
+	medullaDrivers::LegMedulla*       lLegB;
+	medullaDrivers::LegMedulla*       rLegA;
+	medullaDrivers::LegMedulla*       rLegB;
+	medullaDrivers::BoomMedulla*      boom;
+	medullaDrivers::HipMedulla*       lLegHip;
+	medullaDrivers::HipMedulla*       rLegHip;
+	medullaDrivers::BallscrewMedulla* ballscrew;
 	
 	/** @brief Holds our robot state for us.
 	  * Note: Functions using this are NOT thread-safe and should only be called
@@ -64,6 +66,11 @@ class MedullaManager {
 	void initHipMedulla(ec_slavet slave);
 	
 	/** @brief Initializes a leg medulla.
+	  * @param slave The ECat slave for this Medulla.
+	  */
+	void initBallscrewMedulla(ec_slavet slave);
+	
+	/** @brief Initializes a ballscrew medulla.
 	  * @param slave The ECat slave for this Medulla.
 	  */
 	void initLegMedulla(ec_slavet slave);

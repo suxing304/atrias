@@ -15,6 +15,8 @@ bool disableSafeties
 robot_state_leg lLeg
 robot_state_leg rLeg
 
+robot_state_ballscrew ballscrew
+
 float64 currentPositive
 float64 currentNegative
 
