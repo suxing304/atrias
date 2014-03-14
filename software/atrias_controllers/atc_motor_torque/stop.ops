@@ -1,4 +1,0 @@
-# Shut stuff down
-ATCMotorTorque.stop();
-ATCMotorTorque.cleanup();
-unloadComponent("ATCMotorTorque");

@@ -1,5 +1,0 @@
-# Shut stuff down
-ATCMotorSinWave.stop()
-ATCMotorSinWave.cleanup()
-unloadComponent("ATCMotorSinWave")
-atrias_cm.resetControllerNames()

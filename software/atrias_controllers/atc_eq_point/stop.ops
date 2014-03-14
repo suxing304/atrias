@@ -1,5 +1,0 @@
-# Shut stuff down
-ATCEqPoint.stop()
-ATCEqPoint.cleanup()
-unloadComponent("ATCEqPoint")
-atrias_cm.resetControllerNames()

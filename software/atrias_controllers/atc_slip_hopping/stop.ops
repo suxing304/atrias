@@ -1,5 +1,0 @@
-# Shut stuff down
-ATCSlipHopping.stop()
-ATCSlipHopping.cleanup()
-unloadComponent("ATCSlipHopping")
-atrias_cm.resetControllerNames()

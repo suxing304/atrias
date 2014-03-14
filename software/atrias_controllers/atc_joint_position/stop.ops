@@ -1,4 +1,0 @@
-# Shut stuff down
-ATCJointPosition.stop()
-ATCJointPosition.cleanup()
-unloadComponent("ATCJointPosition")
