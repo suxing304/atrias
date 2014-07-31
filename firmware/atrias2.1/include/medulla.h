@@ -24,7 +24,7 @@
 #include "medulla_leg.h"
 #include "medulla_boom.h"
 #include "medulla_hip.h"
-#include "medulla_imu.h"
+//#include "medulla_imu.h"
 
 #include "amplifier.h"
 
@@ -111,7 +111,7 @@ uint16_t estop_timeout_counter;
 
 void main_estop();
 void amplifier_debug();
-void imu_debug();
+//void imu_debug();
 
 // Function Pointers to the individual medulla functions
 /** @brief Function called to initialize hardware

@@ -87,7 +87,7 @@ int main(void) {
 	// Initilize the LED port
 	LED_PORT.DIRSET = LED_MASK;
 
-	// Initilizing timestamp counter
+	// initializing timestamp counter
 	TIMESTAMP_COUNTER.CTRLA = TC_CLKSEL_DIV2_gc;
 
 	// Initilize the EtherCAT

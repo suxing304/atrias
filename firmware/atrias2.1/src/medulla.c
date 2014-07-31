@@ -33,8 +33,8 @@ SPI_USES_PORT(SPIF)
 UART_USES_PORT(USARTD0)
 
 // ADCs on port a and b
-//ADC_USES_PORT(ADCA)
-//ADC_USES_PORT(ADCB)
+ADC_USES_PORT(ADCA)
+ADC_USES_PORT(ADCB)
 
 // TODO(yoos): Shouldn't this logic depend on DIP switch config?
 #ifdef ENABLE_IMU
@@ -86,10 +86,12 @@ int main(void) {
 		amplifier_debug();
 	}
 
+#ifdef ENABLE_IMU
 	// Check if we are in IMU debug mode
 	if (medulla_id == MEDULLA_IMU_DEBUG_ID) {
 		imu_debug();
 	}
+#endif
 
 	// Initialize the debug uart
 	debug_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, debug_uart_tx_buffer, DEBUG_UART_TX_BUFFER_SIZE, debug_uart_rx_buffer, DEBUG_UART_RX_BUFFER_SIZE);
@@ -99,24 +101,24 @@ int main(void) {
 		uart_connect_port(&debug_port, true);
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
-	printf("[Medulla] Initilizing Medulla\n");
+	printf("[Medulla] initializing Medulla\n");
 	#endif
 
-	// Initilizing EStop
+	// initializing EStop
 	#ifdef DEBUG_HIGH
-	printf("[Medulla] Initilizing E-Stop\n");
+	printf("[Medulla] initializing E-Stop\n");
 	#endif
 	estop_port = estop_init_port(io_init_pin(&PORTJ,6),io_init_pin(&PORTJ,7),&TCE0,main_estop);
 
-	// Initilizing timestamp counter
+	// initializing timestamp counter
 	#ifdef DEBUG_HIGH
-	printf("[Medulla] Initilizing timestamp counter\n");
+	printf("[Medulla] initializing timestamp counter\n");
 	#endif
 	TIMESTAMP_COUNTER.CTRLA = TC_CLKSEL_DIV2_gc;
 
 	// Initialize the EtherCAT
 	#ifdef DEBUG_HIGH
-	printf("[Medulla] Initilizing EtherCAT\n");
+	printf("[Medulla] initializing EtherCAT\n");
 	#endif
 	ecat_port = ecat_init_slave(&PORTE,&SPIE,io_init_pin(&PORTE,0),io_init_pin(&PORTE,1));
 	// set the the IRQ pin so it sets the IRQ flags on the falling edge so we can check that for the DC clock
@@ -180,6 +182,7 @@ int main(void) {
 			wait_loop = boom_wait_loop;
 			break;
 
+#ifdef ENABLE_IMU
 		case MEDULLA_IMU_ID_PREFIX:
 			#if defined DEBUG_HIGH || defined DEBUG_LOW
 			printf("loading imu medulla.\n");
@@ -195,6 +198,7 @@ int main(void) {
 			check_halt = imu_check_halt;
 			reset_error = imu_reset_error;
 			break;
+#endif
 		default:
 			#if defined DEBUG_HIGH || defined DEBUG_LOW
 			printf(" unknown medulla.\n");
@@ -505,6 +509,7 @@ void amplifier_debug() {
 
 }
 
+#ifdef ENABLE_IMU
 void imu_debug() {
 	uint8_t bts = 120;   // Number of bytes to send with uart_tx_data. Must divide evenly into UART buffer size. Otherwise, weird UART bug. Actual number here is irrelevant.
 	uint8_t csize = bts*2;
@@ -565,4 +570,4 @@ void imu_debug() {
 		_delay_ms(100);
 	}
 }
-
+#endif
