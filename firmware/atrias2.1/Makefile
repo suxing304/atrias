@@ -45,7 +45,7 @@ CFLAGS += -lm
 
 # avr-libc version > 1.7.0?
 # TODO(yoos): This doesn't actually work.
-ifeq "$(shell expr `gcc -dumpversion` \> 1.7.0)" "1"
+ifeq "$(shell expr `avr-gcc -dumpversion` \> 1.7.0)" "1"
 	CFLAGS += -D__DELAY_BACKWARD_COMPATIBLE__
 endif
 

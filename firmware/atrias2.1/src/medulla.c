@@ -248,7 +248,7 @@ int main(void) {
 		if (PORTE.INTFLAGS & PORT_INT0IF_bm) {
 			TIMESTAMP_COUNTER.CNT = 0; // First thing after finding a falling clock edge, clear the timestamp counter.
 			PORTE.INTFLAGS = PORT_INT0IF_bm; // Now that we noticed DC clock, clear the interrupt flag
-			// This is the signal to read all the sensors and run the state mechine
+			// This is the signal to read all the sensors and run the state machine
 			// Update the inputs
 			update_inputs(medulla_id);
 

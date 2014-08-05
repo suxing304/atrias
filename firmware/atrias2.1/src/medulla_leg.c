@@ -229,7 +229,7 @@ void leg_update_inputs(uint8_t id) {
 		biss_encoder_process_data(&motor_encoder);
 	}
 	else {
-		*leg_error_flags_pdo |= medulla_error_encoder;
+		//*leg_error_flags_pdo |= medulla_error_encoder;
 		motor_encoder_error_counter++;
 	}
 	
@@ -237,7 +237,7 @@ void leg_update_inputs(uint8_t id) {
 		biss_encoder_process_data(&leg_encoder);
 	}
 	else {
-		*leg_error_flags_pdo |= medulla_error_encoder;
+		//*leg_error_flags_pdo |= medulla_error_encoder;
 		leg_encoder_error_counter++;
 	}
 
