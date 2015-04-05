@@ -1,0 +1,16 @@
+*PADS-ECO-V9.5-MILS*
+
+*REMARK* -- elmo_gold_drum_port_c_v1.pcb -- Mon Mar 16 18:43:12 2015
+
+
+*SET_ATTRIBUTE* DECAL 0.125_HOLE
+"Description" 0.125in Hole
+*END*
+*PADS-ECO-V9.5-MILS*
+
+*REMARK* -- elmo_gold_drum_port_c_v1.pcb -- Mon Mar 16 18:44:36 2015
+
+
+*PART*
+J1 HOLE-0.125
+*END*
