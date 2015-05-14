@@ -71,13 +71,13 @@ adc124_t knee_adc;
 uint8_t leg_damping_cnt;
 int32_t last_incremental;
 uint16_t temp_adc_val;
-uint16_t adc_equiv;
 
 // variables for filtering thermistor and voltage values
 uint8_t limit_switch_counter;
 uint8_t thermistor_counters[6];
 uint8_t thermistor_values[6];
 uint8_t therm_num;
+uint16_t adc_equiv;
 uint16_t motor_voltage_counter;
 uint16_t logic_voltage_counter;
 uint8_t motor_encoder_error_counter;
@@ -259,6 +259,35 @@ void leg_update_inputs(uint8_t id) {
 	while (!adc124_read_complete(&knee_adc));
 	adc124_process_data(&knee_adc);
 
+	// Filter thermistor values
+	// Check comparator zero first
+	ac_set_comp(&ac_port_a, thermistor_values[therm_num]);
+
+	// Woah...
+	// Copied directly from Medulla.cpp
+	adc_equiv = 4095*(-.001431*pow(thermistor_values[therm_num], 2)+.107087*thermistor_values[therm_num]+.150644)/MEDULLA_ADC_MAX_VOLTS + MEDULLA_ADC_OFFSET_COUNTS;
+
+	if (ac_check_value(&ac_port_a)) {
+		thermistor_pdo[therm_num] = adc_equiv;
+		if (thermistor_values[therm_num] == ac_port_a.therm_max)
+			thermistor_counters[therm_num]++;
+		else
+			thermistor_values[therm_num]--;
+	}
+	else {
+		if (thermistor_values[therm_num] == ac_port_a.therm_max && thermistor_counters[therm_num] > 0)
+			thermistor_counters[therm_num]--;
+		else
+			thermistor_values[therm_num]++;
+	}
+
+	// Increment the pins
+	therm_num = (therm_num + 1) % 6;
+
+	// Set Mux
+	// The plus one accounts for the non zero indexed thermistor port.
+	ac_set_pins(&ac_port_a, therm_num + 1);
+
 	leg_send_current_read = true;
 }
 
@@ -318,29 +347,6 @@ bool leg_check_error(uint8_t id) {
 	#endif
 
 	#ifdef ERROR_CHECK_THERMISTORS
-	// Filter thermistor values
-	// Check comparator zero first
-	ac_set_comp(&ac_port_a, thermistor_values[therm_num]);
-
-	// Woah...
-	// Copied directly from Medulla.cpp
-	adc_equiv = 4095*(-.001431*pow(thermistor_values[therm_num], 2)+.107087*thermistor_values[therm_num]+.150644)/MEDULLA_ADC_MAX_VOLTS + MEDULLA_ADC_OFFSET_COUNTS;
-
-	if (ac_check_value(&ac_port_a)) {
-		thermistor_pdo[therm_num] = adc_equiv;
-		printf("%d\n", adc_equiv);
-		if (thermistor_values[therm_num] == ac_port_a.therm_max)
-			thermistor_counters[therm_num]++;
-		else
-			thermistor_values[therm_num]--;
-	}
-	else {
-		if (thermistor_values[therm_num] == ac_port_a.therm_max && thermistor_counters[therm_num] > 0)
-			thermistor_counters[therm_num]--;
-		else
-			thermistor_values[therm_num]++;
-	}
-
 	if (thermistor_counters[therm_num] > 100) {
 		#if defined DEBUG_LOW || DEBUG_HIGH	
 		printf("[Medulla Leg] Thermistor error.\n");
@@ -348,13 +354,6 @@ bool leg_check_error(uint8_t id) {
 		*leg_error_flags_pdo |= medulla_error_thermistor;
 		//return true; Don't actually EStop
 	}
-
-	// Increment the pins
-	therm_num = (therm_num + 1) % 6;
-
-	// Set Mux
-	// The plus one accounts for the non zero indexed thermistor port.
-	ac_set_pins(&ac_port_a, therm_num + 1);
 	#endif
 
 	#ifdef ERROR_CHECK_MOTOR_VOLTAGE
