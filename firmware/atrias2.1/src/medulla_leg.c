@@ -221,7 +221,7 @@ void leg_update_inputs(uint8_t id) {
 
 	// Only report debounced data
 	if (limit_switch_counter > 50)
-		*leg_limit_switch_pdo = limit_sw_get_port(&limit_sw_port);
+		*leg_limit_switch_pdo = 0;
 	else
 		*leg_limit_switch_pdo = 0;
 
