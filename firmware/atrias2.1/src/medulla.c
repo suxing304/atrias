@@ -239,6 +239,10 @@ int main(void) {
 	LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_GREEN;
 	#endif
 	while(1) {
+		if (check_error(medulla_id)) {
+			main_estop();
+		}
+		_delay_ms(5);
 		// Check if there was a falling edge of the ethercat IRQ pin
 		if (PORTE.INTFLAGS & PORT_INT0IF_bm) {
 			TIMESTAMP_COUNTER.CNT = 0; // First thing after finding a falling clock edge, clear the timestamp counter.
