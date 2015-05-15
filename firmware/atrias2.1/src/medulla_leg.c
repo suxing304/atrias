@@ -264,20 +264,16 @@ void leg_update_inputs(uint8_t id) {
 	ac_set_comp(&ac_port_a, thermistor_values[therm_num]);
 
 	// Woah...
-	// Copied directly from Medulla.cpp
+	// Derived from Medulla.cpp and AC characterisation
 	adc_equiv = 4095*(-.001431*pow(thermistor_values[therm_num], 2)+.107087*thermistor_values[therm_num]+.150644)/MEDULLA_ADC_MAX_VOLTS + MEDULLA_ADC_OFFSET_COUNTS;
 
 	if (ac_check_value(&ac_port_a)) {
 		thermistor_pdo[therm_num] = adc_equiv;
-		if (thermistor_values[therm_num] == ac_port_a.therm_max)
-			thermistor_counters[therm_num]++;
-		else
+		if (thermistor_values[therm_num] > 0)
 			thermistor_values[therm_num]--;
 	}
 	else {
-		if (thermistor_values[therm_num] == ac_port_a.therm_max && thermistor_counters[therm_num] > 0)
-			thermistor_counters[therm_num]--;
-		else
+		if (thermistor_values[therm_num] < 63)
 			thermistor_values[therm_num]++;
 	}
 
