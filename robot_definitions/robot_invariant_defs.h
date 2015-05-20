@@ -92,6 +92,9 @@ typedef enum {
 
 // Safety cut off values
 
+// Minimum number of consecutive cycles to call an estop on the 12 volt line
+#define ESTOP_DEBOUNCE_LIMIT                                                   5
+
 // Danger region for motor power
 #define MOTOR_VOLTAGE_DANGER_MAX                                            3000
 #define MOTOR_VOLTAGE_DANGER_MIN                                            1500

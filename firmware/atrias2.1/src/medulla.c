@@ -261,6 +261,13 @@ int main(void) {
 	
 			// As long as we get the DC clock we can always feed the watchdog
 			WATCHDOG_TIMER_RESET;
+
+			if (estop_is_estopped(&estop_port)) {
+				estop_debounce++;
+			}
+			else if (estop_debounce > 0){
+				estop_debounce--;
+			}
 		
 			// Run state machine
 			if (*current_state == medulla_state_idle) {
@@ -288,38 +295,31 @@ int main(void) {
 				reset_error();
 				master_watchdog_errors = 0;
 				if (estop_is_estopped(&estop_port)) {
-					if (prev_estop > 5) {
-						printf("[Medulla] E-Stop pressed\n");
-						*current_state = medulla_state_error;
-						estop_timeout_counter = 0;
-						#if defined DEBUG_LOW || defined DEBUG_HIGH
-						printf("[State Machine] Entering state: Error\n");
-						#endif
-					}
-					else
-						prev_estop++;
+					printf("[Medulla] E-Stop pressed\n");
+					*current_state = medulla_state_error;
+					estop_timeout_counter = 0;
+					#if defined DEBUG_LOW || defined DEBUG_HIGH
+					printf("[State Machine] Entering state: Error\n");
+					#endif
+				}
+				else if (check_error(medulla_id) || check_halt(medulla_id)) {
+					// Something is wrong, either a error or halt state was requested
+					// So we will just go into error.
+					
+					*current_state = medulla_state_error;
+					estop_timeout_counter = 0;
+					#if defined DEBUG_LOW || defined DEBUG_HIGH
+					printf("[State Machine] Entering state: Error\n");
+					#endif
 				}
 				else {
-					prev_estop = 0;
-					if (check_error(medulla_id) || check_halt(medulla_id)) {
-						// Something is wrong, either a error or halt state was requested
-						// So we will just go into error.
-						
-						*current_state = medulla_state_error;
-						estop_timeout_counter = 0;
-						#if defined DEBUG_LOW || defined DEBUG_HIGH
-						printf("[State Machine] Entering state: Error\n");
-						#endif
-					}
-					else {
-						// The robot is in a fit state to enter run, arm the robot
-						enable_outputs();
-						*current_state = medulla_state_run;
-						#if defined DEBUG_LOW || defined DEBUG_HIGH
-						printf("[State Machine] Entering state: Run\n");
-						#endif
-						continue;
-					}
+					// The robot is in a fit state to enter run, arm the robot
+					enable_outputs();
+					*current_state = medulla_state_run;
+					#if defined DEBUG_LOW || defined DEBUG_HIGH
+					printf("[State Machine] Entering state: Run\n");
+					#endif
+					continue;
 				}
 			}
 			if (*current_state == medulla_state_run) {
@@ -358,20 +358,14 @@ int main(void) {
 					// The halt state was requested based upon hardware, so switch to that next
 					*current_state = medulla_state_halt;
 
-				if (estop_is_estopped(&estop_port)) {
-					if (prev_estop > 5) {
-						printf("[Medulla] E-Stop pressed\n");
-						*current_state = medulla_state_error;
-						estop_timeout_counter = 0;
-						#if defined DEBUG_LOW || defined DEBUG_HIGH
-						printf("[State Machine] Entering state: Error\n");
-						#endif
-					}
-					else
-						prev_estop++;
+				if (estop_debounce > ESTOP_DEBOUNCE_LIMIT) {
+					printf("[Medulla] E-Stop pressed\n");
+					*current_state = medulla_state_error;
+					estop_timeout_counter = 0;
+					#if defined DEBUG_LOW || defined DEBUG_HIGH
+					printf("[State Machine] Entering state: Error\n");
+					#endif
 				}
-				else
-					prev_estop = 0;
 
 				if (check_error(medulla_id)) {
 					// Either there was an error worthy hardware problem or the estop was asserted
@@ -414,20 +408,14 @@ int main(void) {
 				#ifdef ENABLE_LEDS
 				LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_YELLOW;
 				#endif
-				if (estop_is_estopped(&estop_port)) {
-					if (prev_estop > 5) {
-						printf("[Medulla] E-Stop pressed\n");
-						*current_state = medulla_state_error;
-						estop_timeout_counter = 0;
-						#if defined DEBUG_LOW || defined DEBUG_HIGH
-						printf("[State Machine] Entering state: Error\n");
-						#endif
-					}
-					else
-						prev_estop++;
+				if (estop_debounce > ESTOP_DEBOUNCE_LIMIT) {
+					printf("[Medulla] E-Stop pressed\n");
+					*current_state = medulla_state_error;
+					estop_timeout_counter = 0;
+					#if defined DEBUG_LOW || defined DEBUG_HIGH
+					printf("[State Machine] Entering state: Error\n");
+					#endif
 				}
-				else
-					prev_estop = 0;
 				// In the halt state, we can only go into error from here, so check if we want to go into error
 				if (check_error(medulla_id)) {
 					*current_state = medulla_state_error;
@@ -464,6 +452,7 @@ int main(void) {
 				estop_deassert_port(&estop_port);
 				reset_error();
 				master_watchdog_errors = 0;
+				estop_debounce = 0;
 				*current_state = medulla_state_idle;
 				#if defined DEBUG_LOW || defined DEBUG_HIGH
 				printf("[State Machine] Entering state: Idle\n");

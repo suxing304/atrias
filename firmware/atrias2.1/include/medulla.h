@@ -101,7 +101,7 @@ uint8_t master_watchdog_errors;
 
 // Estop
 estop_port_t estop_port; /** @brief struct used by the estop driver */
-int prev_estop = 0;
+int estop_debounce = 0;
 
 // Timestamp definitions
 #define TIMESTAMP_COUNTER TCC0
